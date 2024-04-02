@@ -10,9 +10,9 @@ from sqlalchemy import select, func, create_engine, NullPool
 from sqlalchemy.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm import sessionmaker
 
-from ir_api.core.exceptions import NonUniqueRecordError
-from ir_api.core.model import Base
-from ir_api.core.specifications.base import Specification
+from fia_api.core.exceptions import NonUniqueRecordError
+from fia_api.core.model import Base
+from fia_api.core.specifications.base import Specification
 
 T = TypeVar("T", bound=Base)
 
@@ -23,7 +23,7 @@ DB_PASSWORD = os.environ.get("DB_PASSWORD", "password")
 DB_IP = os.environ.get("DB_IP", "localhost")
 
 ENGINE = create_engine(
-    f"postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}@{DB_IP}:5432/interactive-reduction",
+    f"postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}@{DB_IP}:5432/fia",
     poolclass=NullPool,
 )
 

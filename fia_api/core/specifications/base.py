@@ -15,7 +15,7 @@ from typing import TypeVar, Generic, Type, Literal, Tuple, Callable, Any
 
 from sqlalchemy import select, Select
 
-from ir_api.core.model import Base
+from fia_api.core.model import Base
 
 T = TypeVar("T", bound=Base)
 

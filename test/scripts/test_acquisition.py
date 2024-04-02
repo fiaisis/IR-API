@@ -7,12 +7,12 @@ from unittest.mock import Mock, patch, mock_open, MagicMock
 
 import pytest
 
-from ir_api.core.exceptions import (
+from fia_api.core.exceptions import (
     MissingRecordError,
     MissingScriptError,
     UnsafePathError,
 )
-from ir_api.scripts.acquisition import (
+from fia_api.scripts.acquisition import (
     _get_script_from_remote,
     _get_script_locally,
     write_script_locally,
@@ -20,7 +20,7 @@ from ir_api.scripts.acquisition import (
     get_script_for_reduction,
     _get_latest_commit_sha,
 )
-from ir_api.scripts.pre_script import PreScript
+from fia_api.scripts.pre_script import PreScript
 
 # pylint: disable = redefined-outer-name
 INSTRUMENT = "instrument_1"
@@ -39,7 +39,7 @@ def mock_response():
 
 
 @patch("requests.get")
-@patch("ir_api.scripts.acquisition._get_latest_commit_sha")
+@patch("fia_api.scripts.acquisition._get_latest_commit_sha")
 def test_sha_env_set_when_sha_present(mock_sha, mock_get, mock_response):
     """Test that environment variable is set when sha is not None."""
     mock_sha.return_value = "valid_sha"
@@ -51,8 +51,8 @@ def test_sha_env_set_when_sha_present(mock_sha, mock_get, mock_response):
 
 
 @patch("requests.get")
-@patch("ir_api.scripts.acquisition.os.environ.__setitem__")
-@patch("ir_api.scripts.acquisition._get_latest_commit_sha")
+@patch("fia_api.scripts.acquisition.os.environ.__setitem__")
+@patch("fia_api.scripts.acquisition._get_latest_commit_sha")
 def test_sha_env_not_set_when_sha_none(mock_sha, mock_setitem, mock_get, mock_response):
     """Test that environment variable is not set when sha is None."""
     mock_sha.return_value = None
@@ -64,7 +64,7 @@ def test_sha_env_not_set_when_sha_none(mock_sha, mock_setitem, mock_get, mock_re
 
 
 @patch("requests.get")
-@patch("ir_api.scripts.acquisition._get_latest_commit_sha")
+@patch("fia_api.scripts.acquisition._get_latest_commit_sha")
 def test_prescript_sha_assigned_correctly(mock_sha, mock_get, mock_response):
     """Test that the sha attribute of the PreScript object is assigned the correct value."""
     mock_sha.return_value = "valid_sha"
@@ -124,7 +124,7 @@ def test__get_script_locally(mock_file):
     result = _get_script_locally(INSTRUMENT)
     assert result.value == "test script content"
     assert result.is_latest is False
-    mock_file.assert_called_once_with("ir_api/local_scripts/instrument_1.py", "r", encoding="utf-8")
+    mock_file.assert_called_once_with("fia_api/local_scripts/instrument_1.py", "r", encoding="utf-8")
 
 
 @patch("builtins.open", side_effect=FileNotFoundError)
@@ -147,12 +147,12 @@ def test_write_script_locally(mock_file):
     """
     script = PreScript("test script content", is_latest=True)
     write_script_locally(script, INSTRUMENT)
-    mock_file.assert_called_once_with("ir_api/local_scripts/instrument_1.py", "w+", encoding="utf-8")
+    mock_file.assert_called_once_with("fia_api/local_scripts/instrument_1.py", "w+", encoding="utf-8")
     mock_file().writelines.assert_called_once_with("test script content")
 
 
-@patch("ir_api.scripts.acquisition._get_script_from_remote")
-@patch("ir_api.scripts.acquisition._get_script_locally")
+@patch("fia_api.scripts.acquisition._get_script_from_remote")
+@patch("fia_api.scripts.acquisition._get_script_locally")
 def test_get_by_instrument_name_remote_(mock_get_local, mock_get_remote):
     """
     test will not get locally when script retrieved from remote
@@ -165,8 +165,8 @@ def test_get_by_instrument_name_remote_(mock_get_local, mock_get_remote):
     mock_get_local.assert_not_called()
 
 
-@patch("ir_api.scripts.acquisition._get_script_from_remote", side_effect=RuntimeError)
-@patch("ir_api.scripts.acquisition._get_script_locally")
+@patch("fia_api.scripts.acquisition._get_script_from_remote", side_effect=RuntimeError)
+@patch("fia_api.scripts.acquisition._get_script_locally")
 def test_get_by_instrument_name_local(mock_local, mock_remote):
     """
     Test will attempt to get script locally when remote fails
@@ -179,7 +179,7 @@ def test_get_by_instrument_name_local(mock_local, mock_remote):
     mock_local.assert_called_once()
 
 
-@patch("ir_api.scripts.acquisition.get_by_instrument_name")
+@patch("fia_api.scripts.acquisition.get_by_instrument_name")
 def test_get_script_for_reduction_no_reduction_id(mock_get_by_name):
     """
     Test base script returned when no id provided
@@ -193,9 +193,9 @@ def test_get_script_for_reduction_no_reduction_id(mock_get_by_name):
     assert result == expected_script
 
 
-@patch("ir_api.scripts.acquisition.get_transform_for_instrument")
-@patch("ir_api.scripts.acquisition.Repo")
-@patch("ir_api.scripts.acquisition.get_by_instrument_name")
+@patch("fia_api.scripts.acquisition.get_transform_for_instrument")
+@patch("fia_api.scripts.acquisition.Repo")
+@patch("fia_api.scripts.acquisition.get_by_instrument_name")
 def test_get_script_for_reduction_with_valid_reduction_id(mock_get_by_name, mock_repo, mock_get_transform):
     """
     Test transform applied to obtained script when reduction id provided
@@ -218,8 +218,8 @@ def test_get_script_for_reduction_with_valid_reduction_id(mock_get_by_name, mock
     assert result == expected_script
 
 
-@patch("ir_api.scripts.acquisition.Repo")
-@patch("ir_api.scripts.acquisition.get_by_instrument_name", return_value="some instrument")
+@patch("fia_api.scripts.acquisition.Repo")
+@patch("fia_api.scripts.acquisition.get_by_instrument_name", return_value="some instrument")
 def test_get_script_for_reduction_with_invalid_reduction_id(_, mock_repo):
     """
     Test exception raised when reduction id is given but no reduction exists
@@ -237,7 +237,7 @@ def test_get_script_for_reduction_with_invalid_reduction_id(_, mock_repo):
     assert f"No reduction found with id: {reduction_id}" in str(excinfo.value)
 
 
-@patch("ir_api.scripts.acquisition.requests.get")
+@patch("fia_api.scripts.acquisition.requests.get")
 def test_get_latest_commit_sha_ok(mock_get):
     """
     Test sha is returned when ok
@@ -251,7 +251,7 @@ def test_get_latest_commit_sha_ok(mock_get):
     assert _get_latest_commit_sha() == "abcd1234"
 
 
-@patch("ir_api.scripts.acquisition.requests.get")
+@patch("fia_api.scripts.acquisition.requests.get")
 def test_get_latest_commit_sha_not_ok(mock_get):
     """
     Test None is returned for non-ok get
@@ -265,7 +265,7 @@ def test_get_latest_commit_sha_not_ok(mock_get):
     assert _get_latest_commit_sha() is None
 
 
-@patch("ir_api.scripts.acquisition.requests.get")
+@patch("fia_api.scripts.acquisition.requests.get")
 def test_get_latest_commit_sha_returns_none_on_exception(mock_get):
     """
     Test None is still returned if the request results in an exception

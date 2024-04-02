@@ -5,8 +5,8 @@ Test case for mantid transform
 import os
 from unittest.mock import Mock
 
-from ir_api.scripts.pre_script import PreScript
-from ir_api.scripts.transforms.mantid_transform import MantidTransform
+from fia_api.scripts.pre_script import PreScript
+from fia_api.scripts.transforms.mantid_transform import MantidTransform
 
 ORIGINAL_SCRIPT = """from __future__ import print_function
 print(1 + 2)

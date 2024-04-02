@@ -10,8 +10,8 @@ from faker import Faker
 from sqlalchemy import create_engine, NullPool
 from sqlalchemy.orm import sessionmaker
 
-from ir_api.core.model import Base, Instrument
-from test.utils import IR_FAKER_PROVIDER, InteractiveReductionProvider
+from fia_api.core.model import Base, Instrument
+from test.utils import FIA_FAKER_PROVIDER, FIAProvider
 
 random.seed(1)
 Faker.seed(1)
@@ -22,7 +22,7 @@ DB_PASSWORD = os.environ.get("DB_PASSWORD", "password")
 DB_IP = os.environ.get("DB_IP", "localhost")
 
 ENGINE = create_engine(
-    f"postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}@{DB_IP}:5432/interactive-reduction",
+    f"postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}@{DB_IP}:5432/fia",
     poolclass=NullPool,
     echo=True,
 )
@@ -31,7 +31,7 @@ SESSION = sessionmaker(ENGINE)
 
 
 def main():
-    ir_provider = IR_FAKER_PROVIDER
+    fia_provider = FIA_FAKER_PROVIDER
 
     if "localhost" not in ENGINE.url:
         # Someone already overwrote all of production with this. Proceed with caution.
@@ -42,13 +42,13 @@ def main():
 
     with SESSION() as session:
         instruments = []
-        for instrument in InteractiveReductionProvider.INSTRUMENTS:
+        for instrument in FIAProvider.INSTRUMENTS:
             instrument_ = Instrument()
             instrument_.instrument_name = instrument
             instruments.append(instrument_)
 
         for i in range(10000):
-            session.add(ir_provider.insertable_reduction(random.choice(instruments)))
+            session.add(fia_provider.insertable_reduction(random.choice(instruments)))
         session.commit()
 
 

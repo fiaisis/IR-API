@@ -4,8 +4,8 @@ Test for tosca transform
 
 from unittest.mock import Mock
 
-from ir_api.scripts.pre_script import PreScript
-from ir_api.scripts.transforms.tosca_transform import ToscaTransform
+from fia_api.scripts.pre_script import PreScript
+from fia_api.scripts.transforms.tosca_transform import ToscaTransform
 
 SCRIPT = """from mantid.simpleapi import *
 

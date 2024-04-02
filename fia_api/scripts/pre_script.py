@@ -4,7 +4,7 @@ PreScript contains the PreScript definition. As it is not strictly a model, it d
 
 from typing import Optional
 
-from ir_api.core.responses import PreScriptResponse
+from fia_api.core.responses import PreScriptResponse
 
 
 class PreScript:

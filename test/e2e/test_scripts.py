@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 from starlette.testclient import TestClient
 
-from ir_api.ir_api import app
+from fia_api.fia_api import app
 
 client = TestClient(app)
 
@@ -22,7 +22,7 @@ def assert_is_commit_sha(string: str) -> None:
     assert re.match("^[a-f0-9]{7,40}$", string) is not None
 
 
-@patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "ir_api/local_scripts")
+@patch("fia_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "fia_api/local_scripts")
 def test_get_default_test_prescript():
     """
     Test obtaining of untransformed mari pre script

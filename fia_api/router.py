@@ -10,27 +10,27 @@ from typing import Optional, List, Literal
 from fastapi import APIRouter
 from starlette.background import BackgroundTasks
 
-from ir_api.core.responses import (
+from fia_api.core.responses import (
     PreScriptResponse,
     ReductionResponse,
     ReductionWithRunsResponse,
     CountResponse,
     RunResponse,
 )
-from ir_api.core.services.reduction import (
+from fia_api.core.services.reduction import (
     get_reductions_by_instrument,
     get_reduction_by_id,
     get_reductions_by_experiment_number,
     count_reductions,
     count_reductions_by_instrument,
 )
-from ir_api.core.services.run import get_total_run_count, get_run_count_by_instrument, get_runs_by_instrument
-from ir_api.scripts.acquisition import (
+from fia_api.core.services.run import get_total_run_count, get_run_count_by_instrument, get_runs_by_instrument
+from fia_api.scripts.acquisition import (
     get_script_for_reduction,
     write_script_locally,
     get_script_by_sha,
 )
-from ir_api.scripts.pre_script import PreScript
+from fia_api.scripts.pre_script import PreScript
 
 ROUTER = APIRouter()
 

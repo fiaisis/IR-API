@@ -18,13 +18,13 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
-          file: ./container/ir_api.D
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/ir_api:${{ github.sha }}
+          file: ./container/fia_api.D
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/fia_api:${{ github.sha }}
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/ir_api:${{ github.sha }}
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/fia_api:${{ github.sha }}
           format: sarif
           output: trivy-results.sarif
           ignore-unfixed: true

@@ -4,9 +4,9 @@ Service Layer for runs
 
 from typing import Sequence, Literal
 
-from ir_api.core.model import Run
-from ir_api.core.repositories import Repo
-from ir_api.core.specifications.run import RunSpecification
+from fia_api.core.model import Run
+from fia_api.core.repositories import Repo
+from fia_api.core.specifications.run import RunSpecification
 
 _REPO: Repo[Run] = Repo()
 

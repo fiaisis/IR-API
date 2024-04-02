@@ -1,5 +1,5 @@
 """
-Module defining specifications for querying Reduction entities within the IR API.
+Module defining specifications for querying Reduction entities within the FIA API.
 
 It includes the ReductionSpecification class, which facilitates the construction of complex queries
 for fetching Reduction entities based on various criteria such as instrument name, experiment number,
@@ -13,8 +13,8 @@ from __future__ import annotations
 
 from typing import Type, Optional, Literal, Union
 
-from ir_api.core.model import Reduction, Instrument, Run, run_reduction_junction_table
-from ir_api.core.specifications.base import Specification, paginate, apply_ordering
+from fia_api.core.model import Reduction, Instrument, Run, run_reduction_junction_table
+from fia_api.core.specifications.base import Specification, paginate, apply_ordering
 
 ReductionOrderField = Literal["reduction_start", "reduction_end", "reduction_state", "id", "reduction_outputs"]
 RunOrderField = Literal["run_start", "run_end", "experiment_number", "experiment_title", "filename"]

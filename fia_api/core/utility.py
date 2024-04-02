@@ -3,7 +3,7 @@
 import functools
 from typing import Callable, Any, TypeVar, cast
 
-from ir_api.core.exceptions import UnsafePathError
+from fia_api.core.exceptions import UnsafePathError
 
 FuncT = TypeVar("FuncT", bound=Callable[[str], Any])
 

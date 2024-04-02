@@ -9,7 +9,7 @@ from typing import Optional, Any, List
 
 from pydantic import BaseModel
 
-from ir_api.core.model import ReductionState, Reduction, Run
+from fia_api.core.model import ReductionState, Reduction, Run
 
 
 class CountResponse(BaseModel):

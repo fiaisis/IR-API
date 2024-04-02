@@ -8,17 +8,17 @@ from datetime import datetime, timedelta
 from faker import Faker
 from faker.providers import BaseProvider
 
-from ir_api.core.model import Instrument, Run, Reduction, ReductionState, Script, Base
-from ir_api.core.repositories import ENGINE, SESSION
+from fia_api.core.model import Instrument, Run, Reduction, ReductionState, Script, Base
+from fia_api.core.repositories import ENGINE, SESSION
 
 random.seed(1)
 Faker.seed(1)
 faker = Faker()
 
 
-class InteractiveReductionProvider(BaseProvider):
+class FIAProvider(BaseProvider):
     """
-    Custom interactive reduction faker provider
+    Custom fia faker provider
     """
 
     INSTRUMENTS = [
@@ -155,7 +155,7 @@ class InteractiveReductionProvider(BaseProvider):
         return reduction
 
 
-IR_FAKER_PROVIDER = InteractiveReductionProvider(faker)
+FIA_FAKER_PROVIDER = FIAProvider(faker)
 
 TEST_INSTRUMENT = Instrument(instrument_name="TEST")
 TEST_REDUCTION = Reduction(
@@ -193,12 +193,12 @@ def setup_database() -> None:
     Base.metadata.create_all(ENGINE)
     with SESSION() as session:
         instruments = []
-        for instrument in IR_FAKER_PROVIDER.INSTRUMENTS:
+        for instrument in FIA_FAKER_PROVIDER.INSTRUMENTS:
             instrument_ = Instrument()
             instrument_.instrument_name = instrument
             instruments.append(instrument_)
         for _ in range(5000):
-            session.add(IR_FAKER_PROVIDER.insertable_reduction(random.choice(instruments)))
+            session.add(FIA_FAKER_PROVIDER.insertable_reduction(random.choice(instruments)))
         session.add(TEST_REDUCTION)
         session.commit()
         session.refresh(TEST_REDUCTION)
