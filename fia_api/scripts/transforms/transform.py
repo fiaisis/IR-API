@@ -10,8 +10,8 @@ MissingTransformError (Exception): A custom exception for handling cases where a
 
 from abc import ABC, abstractmethod
 
-from ir_api.core.model import Reduction
-from ir_api.scripts.pre_script import PreScript
+from fia_api.core.model import Reduction
+from fia_api.scripts.pre_script import PreScript
 
 
 class Transform(ABC):

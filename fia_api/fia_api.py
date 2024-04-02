@@ -8,17 +8,17 @@ import sys
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from ir_api.core.exceptions import (
+from fia_api.core.exceptions import (
     MissingRecordError,
     MissingScriptError,
     UnsafePathError,
 )
-from ir_api.exception_handlers import (
+from fia_api.exception_handlers import (
     missing_record_handler,
     missing_script_handler,
     unsafe_path_handler,
 )
-from ir_api.router import ROUTER
+from fia_api.router import ROUTER
 
 stdout_handler = logging.StreamHandler(stream=sys.stdout)
 logging.basicConfig(

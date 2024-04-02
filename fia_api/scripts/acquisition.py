@@ -8,18 +8,18 @@ from typing import Optional
 
 import requests
 
-from ir_api.core.exceptions import MissingRecordError, MissingScriptError
-from ir_api.core.model import Reduction
-from ir_api.core.repositories import Repo
-from ir_api.core.specifications.reduction import ReductionSpecification
-from ir_api.core.utility import forbid_path_characters
-from ir_api.scripts.pre_script import PreScript
-from ir_api.scripts.transforms.factory import get_transform_for_instrument
-from ir_api.scripts.transforms.mantid_transform import MantidTransform
+from fia_api.core.exceptions import MissingRecordError, MissingScriptError
+from fia_api.core.model import Reduction
+from fia_api.core.repositories import Repo
+from fia_api.core.specifications.reduction import ReductionSpecification
+from fia_api.core.utility import forbid_path_characters
+from fia_api.scripts.pre_script import PreScript
+from fia_api.scripts.transforms.factory import get_transform_for_instrument
+from fia_api.scripts.transforms.mantid_transform import MantidTransform
 
 logger = logging.getLogger(__name__)
 
-LOCAL_SCRIPT_DIR = "ir_api/local_scripts"
+LOCAL_SCRIPT_DIR = "fia_api/local_scripts"
 
 
 def _get_latest_commit_sha() -> Optional[str]:
@@ -30,7 +30,7 @@ def _get_latest_commit_sha() -> Optional[str]:
     try:
         logger.info("Getting latest commit sha for autoreduction-script repo")
         response = requests.get(
-            "https://api.github.com/repos/interactivereduction/autoreduction-scripts/commits/HEAD",
+            "https://api.github.com/repos/fiaisis/autoreduction-scripts/commits/HEAD",
             timeout=30,
         )
 
@@ -52,8 +52,7 @@ def _get_script_from_remote(instrument: str) -> PreScript:
     try:
         logger.info("Attempting to get latest %s script...", instrument)
         request = requests.get(
-            f"https://raw.githubusercontent.com/interactivereduction/autoreduction-scripts/main/"
-            f"{instrument.upper()}/reduce.py",
+            f"https://raw.githubusercontent.com/fiaisis/autoreduction-scripts/main/" f"{instrument.upper()}/reduce.py",
             timeout=30,
         )
         if request.status_code != 200:
@@ -162,8 +161,7 @@ def get_script_by_sha(instrument: str, sha: str, reduction_id: Optional[int] = N
     """
     try:
         response = requests.get(
-            f"https://raw.githubusercontent.com/interactivereduction/autoreduction-scripts/{sha}/"
-            f"{instrument.upper()}/reduce.py",
+            f"https://raw.githubusercontent.com/fiaisis/autoreduction-scripts/{sha}/" f"{instrument.upper()}/reduce.py",
             timeout=30,
         )
         if response.status_code == 404:

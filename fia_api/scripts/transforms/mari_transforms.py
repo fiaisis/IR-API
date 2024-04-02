@@ -9,9 +9,9 @@ from typing import List
 from sqlalchemy import ColumnElement
 from sqlalchemy.dialects.postgresql import JSONB
 
-from ir_api.core.model import Reduction
-from ir_api.scripts.pre_script import PreScript
-from ir_api.scripts.transforms.transform import Transform
+from fia_api.core.model import Reduction
+from fia_api.scripts.pre_script import PreScript
+from fia_api.scripts.transforms.transform import Transform
 
 logger = logging.getLogger(__name__)
 

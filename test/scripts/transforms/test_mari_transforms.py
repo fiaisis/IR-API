@@ -6,8 +6,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from ir_api.scripts.pre_script import PreScript
-from ir_api.scripts.transforms.mari_transforms import MariTransform
+from fia_api.scripts.pre_script import PreScript
+from fia_api.scripts.transforms.mari_transforms import MariTransform
 
 
 # pylint: disable = redefined-outer-name

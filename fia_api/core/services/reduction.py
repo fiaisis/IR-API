@@ -4,10 +4,10 @@ Service Layer for reductions
 
 from typing import Sequence, Literal
 
-from ir_api.core.exceptions import MissingRecordError
-from ir_api.core.model import Reduction
-from ir_api.core.repositories import Repo
-from ir_api.core.specifications.reduction import ReductionSpecification
+from fia_api.core.exceptions import MissingRecordError
+from fia_api.core.model import Reduction
+from fia_api.core.repositories import Repo
+from fia_api.core.specifications.reduction import ReductionSpecification
 
 OrderField = Literal[
     "reduction_start",

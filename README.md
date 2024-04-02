@@ -1,8 +1,8 @@
-# IR-API
-The interactive reduction ReST API.
-![License: GPL-3.0](https://img.shields.io/github/license/InteractiveReduction/run-detection)
-![Build: passing](https://img.shields.io/github/actions/workflow/status/interactivereduction/IR-API/tests.yml?branch=main)
-[![codecov](https://codecov.io/gh/interactivereduction/IR-API/branch/main/graph/badge.svg?token=XRJ1F7TEIT)](https://codecov.io/gh/interactivereduction/IR-API)
+# fia-api
+The flexible interactive automation ReST API.
+![License: GPL-3.0](https://img.shields.io/github/license/fiaisis/run-detection)
+![Build: passing](https://img.shields.io/github/actions/workflow/status/fiaisis/fia-api/tests.yml?branch=main)
+[![codecov](https://codecov.io/gh/fiaisis/fia-api/branch/main/graph/badge.svg?token=XRJ1F7TEIT)](https://codecov.io/gh/fiaisis/fia-api)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/PyCQA/pylint)
 
@@ -13,7 +13,7 @@ You may need to escape the square brackets e.g. \[all\]
 ## Running Directly for development
 
 ```shell
-uvicorn ir_api.ir_api:app --reload  
+uvicorn fia_api.fia_api:app --reload  
 ```
 
 The reload option will reload the api on code changes.
@@ -24,17 +24,17 @@ The reload option will reload the api on code changes.
 Build using this command in the root of this repository:
 
 ```shell
-docker build . -f ./container/ir_api.D -t ghcr.io/interactivereduction/ir-api
+docker build . -f ./container/fia_api.D -t ghcr.io/fiaisis/fia-api
 ```
 
 Run on port 8080, by binding port 80 to port 8080 with a built container:
 ```shell
-docker run -p 8080:80 ghcr.io/interactivereduction/ir-api
+docker run -p 8080:80 ghcr.io/fiaisis/fia-api
 ```
 
 How to push the container to the Github container registry:
 ```shell
-docker push ghcr.io/interactivereduction/ir-api -a
+docker push ghcr.io/fiaisis/fia-api -a
 ```
 
 ## API Documentation

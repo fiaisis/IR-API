@@ -4,11 +4,11 @@ Tests for the transform factory function
 
 import pytest
 
-from ir_api.scripts.transforms.factory import get_transform_for_instrument
-from ir_api.scripts.transforms.mari_transforms import MariTransform
-from ir_api.scripts.transforms.test_transforms import TestTransform
-from ir_api.scripts.transforms.tosca_transform import ToscaTransform
-from ir_api.scripts.transforms.transform import MissingTransformError
+from fia_api.scripts.transforms.factory import get_transform_for_instrument
+from fia_api.scripts.transforms.mari_transforms import MariTransform
+from fia_api.scripts.transforms.test_transforms import TestTransform
+from fia_api.scripts.transforms.tosca_transform import ToscaTransform
+from fia_api.scripts.transforms.transform import MissingTransformError
 
 
 def test_get_transform_for_run_mari():

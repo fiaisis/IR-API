@@ -1,5 +1,5 @@
 """
-Module defining specifications for querying Run entities in the IR API.
+Module defining specifications for querying Run entities in the FIA API.
 
 It includes the RunSpecification class which allows for building complex queries
 for Run entities based on various criteria such as instrument, limit, offset,
@@ -13,8 +13,8 @@ from __future__ import annotations
 
 from typing import Type, Literal
 
-from ir_api.core.model import Run, Instrument
-from ir_api.core.specifications.base import Specification, paginate, apply_ordering
+from fia_api.core.model import Run, Instrument
+from fia_api.core.specifications.base import Specification, paginate, apply_ordering
 
 
 class RunSpecification(Specification[Run]):

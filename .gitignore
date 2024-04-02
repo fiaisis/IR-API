@@ -1,8 +1,8 @@
 .idea/
-ir_api.egg-info/
+fia_api.egg-info/
 
-ir_api/local_scripts/*
-!ir_api/local_scripts/.keep
+fia_api/local_scripts/*
+!fia_api/local_scripts/.keep
 
  Byte-compiled / optimized / DLL files
 __pycache__/

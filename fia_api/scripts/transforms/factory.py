@@ -4,10 +4,10 @@ This module provides a factory function to get the appropriate transform for a g
 
 import logging
 
-from ir_api.scripts.transforms.mari_transforms import MariTransform
-from ir_api.scripts.transforms.test_transforms import TestTransform
-from ir_api.scripts.transforms.tosca_transform import ToscaTransform
-from ir_api.scripts.transforms.transform import Transform, MissingTransformError
+from fia_api.scripts.transforms.mari_transforms import MariTransform
+from fia_api.scripts.transforms.test_transforms import TestTransform
+from fia_api.scripts.transforms.tosca_transform import ToscaTransform
+from fia_api.scripts.transforms.transform import Transform, MissingTransformError
 
 logger = logging.getLogger(__name__)
 

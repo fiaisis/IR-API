@@ -9,11 +9,11 @@ import datetime
 
 import pytest
 
-from ir_api.core.exceptions import NonUniqueRecordError
-from ir_api.core.model import Base, Script, Instrument, Reduction, ReductionState, Run
-from ir_api.core.repositories import ENGINE, SESSION, Repo
-from ir_api.core.specifications.reduction import ReductionSpecification
-from ir_api.core.specifications.run import RunSpecification
+from fia_api.core.exceptions import NonUniqueRecordError
+from fia_api.core.model import Base, Script, Instrument, Reduction, ReductionState, Run
+from fia_api.core.repositories import ENGINE, SESSION, Repo
+from fia_api.core.specifications.reduction import ReductionSpecification
+from fia_api.core.specifications.run import RunSpecification
 
 # pylint: disable = redefined-outer-name
 

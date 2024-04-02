@@ -4,8 +4,8 @@ Test cases for response objects
 
 import datetime
 
-from ir_api.core.model import Run, Instrument, Reduction, ReductionState, Script
-from ir_api.core.responses import RunResponse, ReductionResponse, ReductionWithRunsResponse
+from fia_api.core.model import Run, Instrument, Reduction, ReductionState, Script
+from fia_api.core.responses import RunResponse, ReductionResponse, ReductionWithRunsResponse
 
 RUN = Run(
     filename="filename",

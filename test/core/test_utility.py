@@ -4,8 +4,8 @@ Tests for utility functions
 
 import pytest
 
-from ir_api.core.exceptions import UnsafePathError
-from ir_api.core.utility import forbid_path_characters
+from fia_api.core.exceptions import UnsafePathError
+from fia_api.core.utility import forbid_path_characters
 
 
 def dummy_string_arg_function(arg: str) -> str:

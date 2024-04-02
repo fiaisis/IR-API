@@ -7,13 +7,13 @@ from unittest.mock import patch
 
 from starlette.testclient import TestClient
 
-from ir_api.ir_api import app
-from test.utils import IR_FAKER_PROVIDER
+from fia_api.fia_api import app
+from test.utils import FIA_FAKER_PROVIDER
 
 client = TestClient(app)
 
 
-faker = IR_FAKER_PROVIDER
+faker = FIA_FAKER_PROVIDER
 
 
 def test_get_reduction_by_id_reduction_doesnt_exist():
@@ -69,7 +69,7 @@ def test_get_reduction_by_id_reduction_exists():
     }
 
 
-@patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "ir_api/local_scripts")
+@patch("fia_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "fia_api/local_scripts")
 def test_get_prescript_when_reduction_does_not_exist():
     """
     Test return 404 when requesting pre script from non existant reduction
@@ -80,7 +80,7 @@ def test_get_prescript_when_reduction_does_not_exist():
     assert response.json() == {"message": "Resource not found"}
 
 
-@patch("ir_api.scripts.acquisition._get_script_from_remote", side_effect=RuntimeError)
+@patch("fia_api.scripts.acquisition._get_script_from_remote", side_effect=RuntimeError)
 def test_unsafe_path_request_returns_400_status(_):
     """
     Test that a 400 is returned for unsafe characters in script request
@@ -91,7 +91,7 @@ def test_unsafe_path_request_returns_400_status(_):
     assert response.json() == {"message": "The given request contains bad characters"}
 
 
-@patch("ir_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "ir_api/local_scripts")
+@patch("fia_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "fia_api/local_scripts")
 def test_get_test_prescript_for_reduction():
     """
     Test the return of transformed test script
