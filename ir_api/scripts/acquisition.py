@@ -30,7 +30,7 @@ def _get_latest_commit_sha() -> Optional[str]:
     try:
         logger.info("Getting latest commit sha for autoreduction-script repo")
         response = requests.get(
-            "https://api.github.com/repos/interactivereduction/autoreduction-scripts/commits/HEAD",
+            "https://api.github.com/repos/fiaisis/autoreduction-scripts/commits/HEAD",
             timeout=30,
         )
 
@@ -52,8 +52,7 @@ def _get_script_from_remote(instrument: str) -> PreScript:
     try:
         logger.info("Attempting to get latest %s script...", instrument)
         request = requests.get(
-            f"https://raw.githubusercontent.com/interactivereduction/autoreduction-scripts/main/"
-            f"{instrument.upper()}/reduce.py",
+            f"https://raw.githubusercontent.com/fiaisis/autoreduction-scripts/main/" f"{instrument.upper()}/reduce.py",
             timeout=30,
         )
         if request.status_code != 200:
@@ -162,8 +161,7 @@ def get_script_by_sha(instrument: str, sha: str, reduction_id: Optional[int] = N
     """
     try:
         response = requests.get(
-            f"https://raw.githubusercontent.com/interactivereduction/autoreduction-scripts/{sha}/"
-            f"{instrument.upper()}/reduce.py",
+            f"https://raw.githubusercontent.com/fiaisis/autoreduction-scripts/{sha}/" f"{instrument.upper()}/reduce.py",
             timeout=30,
         )
         if response.status_code == 404:

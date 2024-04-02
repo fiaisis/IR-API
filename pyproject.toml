@@ -1,5 +1,5 @@
 [project]
-name = "ir-api"
+name = "fia-api"
 readme = "README.md"
 version = "0.0.1"
 dependencies = [
@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.urls]
-"Repository" = "https://github.com/interactivereduction/ir-api"
+"Repository" = "https://github.com/fiaisis/fia-api"
 
 [project.optional-dependencies]
 formatting = [
@@ -32,14 +32,14 @@ test = [
 code-inspection = [
     "pylint==3.1.0",
     "mypy==1.8.0",
-    "ir-api[test]",
+    "fia-api[test]",
     "types-requests==2.31.0.20240218",
     "types-urllib3==1.26.25.14"
 ]
 
 dev = [
-    "ir-api[code-inspection]",
-    "ir-api[formatting]",
+    "fia-api[code-inspection]",
+    "fia-api[formatting]",
 ]
 
 

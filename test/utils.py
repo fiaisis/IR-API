@@ -16,9 +16,9 @@ Faker.seed(1)
 faker = Faker()
 
 
-class InteractiveReductionProvider(BaseProvider):
+class FIAProvider(BaseProvider):
     """
-    Custom interactive reduction faker provider
+    Custom fia faker provider
     """
 
     INSTRUMENTS = [
@@ -155,7 +155,7 @@ class InteractiveReductionProvider(BaseProvider):
         return reduction
 
 
-IR_FAKER_PROVIDER = InteractiveReductionProvider(faker)
+IR_FAKER_PROVIDER = FIAProvider(faker)
 
 TEST_INSTRUMENT = Instrument(instrument_name="TEST")
 TEST_REDUCTION = Reduction(
