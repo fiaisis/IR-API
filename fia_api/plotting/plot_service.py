@@ -34,7 +34,7 @@ def simple_2d_gaussian():
     errors = generate_gaussian_data(mean_y, std_dev_y, count=100)
 
     # Create Plot data class instance
-    plot = Plot(type=PlotType.TWO_D, x=x_points, y=y_points, errors=errors)
+    plot = Plot(type=random.choice([PlotType.ONE_D, PlotType.TWO_D]), x=x_points, y=y_points, errors=errors)
 
     # Return the plot data class
     return plot
