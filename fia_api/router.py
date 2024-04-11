@@ -4,7 +4,6 @@ Module containing the REST endpoints
 
 from __future__ import annotations
 
-
 from typing import Optional, List, Literal
 
 from fastapi import APIRouter
@@ -25,6 +24,7 @@ from fia_api.core.services.reduction import (
     count_reductions_by_instrument,
 )
 from fia_api.core.services.run import get_total_run_count, get_run_count_by_instrument, get_runs_by_instrument
+from fia_api.plotting.plot_service import Plot, get_plots_for_reduction
 from fia_api.scripts.acquisition import (
     get_script_for_reduction,
     write_script_locally,
@@ -233,3 +233,14 @@ async def get_runs_for_instrument(
             instrument.upper(), limit=limit, offset=offset, order_by=order_by, order_direction=order_direction
         )
     ]
+
+
+@ROUTER.get("/reduction/{reduction_id}/plots")
+def get_plots(reduction_id: int) -> List[Plot]:
+    """
+    Given a reduction id, return its plots
+    \f
+    :param reduction_id:
+    :return: A list of plots
+    """
+    return get_plots_for_reduction(reduction_id)
