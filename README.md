@@ -1,5 +1,5 @@
 # fia-api
-The flexible interactive automation ReST API.
+The flexible interactive automation ReST API.  
 ![License: GPL-3.0](https://img.shields.io/github/license/fiaisis/run-detection)
 ![Build: passing](https://img.shields.io/github/actions/workflow/status/fiaisis/fia-api/tests.yml?branch=main)
 [![codecov](https://codecov.io/gh/fiaisis/fia-api/branch/main/graph/badge.svg?token=XRJ1F7TEIT)](https://codecov.io/gh/fiaisis/fia-api)
