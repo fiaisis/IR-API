@@ -2,6 +2,7 @@
 Module provides the OSIRISTransform class, an implementation of the Transform abstract base class for Osiris instrument
 scripts.
 """
+
 import logging
 from typing import Iterable
 
