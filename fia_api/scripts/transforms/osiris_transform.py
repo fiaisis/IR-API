@@ -27,25 +27,31 @@ class OsirisTransform(Transform):
         for index, line in enumerate(lines):
             if line.startswith("input_runs"):
                 lines[index] = "input_runs = " + (
-                    str(reduction.reduction_inputs["runno"])
-                    if isinstance(reduction.reduction_inputs["runno"], Iterable)
-                    else f"[{reduction.reduction_inputs['runno']}]"
+                    str(reduction.reduction_inputs["runno"])  # type:ignore
+                    if isinstance(reduction.reduction_inputs["runno"], Iterable)  # type:ignore
+                    else f"[{reduction.reduction_inputs['runno']}]"  # type:ignore
                 )
                 continue
             if line.startswith("calibration_file_path"):
-                lines[index] = f"calibration_file_path = \"{reduction.reduction_inputs['calibration_file_path']}\""
+                lines[
+                    index
+                ] = f"calibration_file_path = \"{reduction.reduction_inputs['calibration_file_path']}\""  # type:ignore
                 continue
             if line.startswith("cycle ="):
-                lines[index] = f"cycle = \"{reduction.reduction_inputs['cycle_string']}\""
+                lines[index] = f"cycle = \"{reduction.reduction_inputs['cycle_string']}\""  # type:ignore
                 continue
             if line.startswith("reflection = "):
-                lines[index] = f"reflection = \"{reduction.reduction_inputs['analyser']}\""
+                lines[index] = f"reflection = \"{reduction.reduction_inputs['analyser']}\""  # type:ignore
                 continue
             if line.startswith("spectroscopy_reduction ="):
-                lines[index] = f"spectroscopy_reduction = {reduction.reduction_inputs['mode'] == 'spectroscopy'}"
+                lines[
+                    index
+                ] = f"spectroscopy_reduction = {reduction.reduction_inputs['mode'] == 'spectroscopy'}"  # type:ignore
                 continue
             if line.startswith("diffraction_reduction = "):
-                lines[index] = f"diffraction_reduction = {reduction.reduction_inputs['mode'] == 'diffraction'}"
+                lines[
+                    index
+                ] = f"diffraction_reduction = {reduction.reduction_inputs['mode'] == 'diffraction'}"  # type:ignore
                 continue
 
         script.value = "\n".join(lines)
