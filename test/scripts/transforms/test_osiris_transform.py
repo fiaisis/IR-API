@@ -96,7 +96,7 @@ for workspace in output_workspaces:
 
 def create_expected_script(
     input_runs, calibration_file_path, cycle, reflection, spectroscopy_reduction, diffraction_reduction
-):
+) -> str:
     """Generate an expected script for assertion"""
     return f"""# import mantid algorithms, numpy and matplotlib
 from mantid.simpleapi import *
