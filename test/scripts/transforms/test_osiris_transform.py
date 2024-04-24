@@ -1,4 +1,5 @@
 """Test Case for osiris transforms"""
+
 # pylint: disable = line-too-long
 from unittest.mock import Mock
 
