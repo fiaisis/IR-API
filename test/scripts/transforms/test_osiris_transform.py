@@ -1,3 +1,5 @@
+"""Test Case for osiris transforms"""
+# pylint: disable = line-too-long
 from unittest.mock import Mock
 
 from fia_api.scripts.pre_script import PreScript
@@ -94,6 +96,7 @@ for workspace in output_workspaces:
 def create_expected_script(
     input_runs, calibration_file_path, cycle, reflection, spectroscopy_reduction, diffraction_reduction
 ):
+    """Generate an expected script for assertion"""
     return f"""# import mantid algorithms, numpy and matplotlib
 from mantid.simpleapi import *
 import matplotlib.pyplot as plt
