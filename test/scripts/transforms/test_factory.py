@@ -6,38 +6,19 @@ import pytest
 
 from fia_api.scripts.transforms.factory import get_transform_for_instrument
 from fia_api.scripts.transforms.mari_transforms import MariTransform
+from fia_api.scripts.transforms.osiris_transform import OsirisTransform
 from fia_api.scripts.transforms.test_transforms import TestTransform
 from fia_api.scripts.transforms.tosca_transform import ToscaTransform
 from fia_api.scripts.transforms.transform import MissingTransformError
 
 
-def test_get_transform_for_run_mari():
-    """
-    Test mari transform returned for mari
-    :return: None
-    """
-    instrument = "mari"
-    transform = get_transform_for_instrument(instrument)
-    assert isinstance(transform, MariTransform)
-
-
-def test_get_transform_for_tosca():
-    """
-    Test Tosca transform returned for tosca
-    :return: None
-    """
-    transform = get_transform_for_instrument("tosca")
-    assert isinstance(transform, ToscaTransform)
-
-
-def test_get_transform_for_run_test():
-    """
-    Test that TestTransform returned for TestInstrument
-    :return: None
-    """
-    instrument = "test"
-    transform = get_transform_for_instrument(instrument)
-    assert isinstance(transform, TestTransform)
+@pytest.mark.parametrize(
+    "name,expected_transform",
+    [("mari", MariTransform), ("tosca", ToscaTransform), ("test", TestTransform), ("osiris", OsirisTransform)],
+)
+def test_transform_factory(name, expected_transform):
+    """Parametrised factory tests"""
+    assert isinstance(get_transform_for_instrument(name), expected_transform)
 
 
 def test_get_transform_for_run_unknown_instrument():

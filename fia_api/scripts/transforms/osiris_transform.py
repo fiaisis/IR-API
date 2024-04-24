@@ -1,0 +1,51 @@
+"""
+Module provides the OSIRISTransform class, an implementation of the Transform abstract base class for Osiris instrument
+scripts.
+"""
+import logging
+from typing import Iterable
+
+from fia_api.core.model import Reduction
+from fia_api.scripts.pre_script import PreScript
+from fia_api.scripts.transforms.transform import Transform
+
+logger = logging.getLogger(__name__)
+
+
+class OsirisTransform(Transform):
+    """
+    OsirisTransform applies modifications to MARI instrument scripts based on reduction input parameters in a Reduction
+    entity.
+    """
+
+    def apply(self, script: PreScript, reduction: Reduction) -> None:
+        logger.info("Beginning Osiris transform for reduction %s...", reduction.id)
+        lines = script.value.splitlines()
+        # MyPY does not believe ColumnElement[JSONB] is indexable, despite JSONB implementing the Indexable mixin
+        # If you get here in the future, try removing the type ignore and see if it passes with newer mypy
+        for index, line in enumerate(lines):
+            if line.startswith("input_runs"):
+                lines[index] = "input_runs = " + (
+                    str(reduction.reduction_inputs["runno"])
+                    if isinstance(reduction.reduction_inputs["runno"], Iterable)
+                    else f"[{reduction.reduction_inputs['runno']}]"
+                )
+                continue
+            if line.startswith("calibration_file_path"):
+                lines[index] = f"calibration_file_path = \"{reduction.reduction_inputs['calibration_file_path']}\""
+                continue
+            if line.startswith("cycle ="):
+                lines[index] = f"cycle = \"{reduction.reduction_inputs['cycle_string']}\""
+                continue
+            if line.startswith("reflection = "):
+                lines[index] = f"reflection = \"{reduction.reduction_inputs['analyser']}\""
+                continue
+            if line.startswith("spectroscopy_reduction ="):
+                lines[index] = f"spectroscopy_reduction = {reduction.reduction_inputs['mode'] == 'spectroscopy'}"
+                continue
+            if line.startswith("diffraction_reduction = "):
+                lines[index] = f"diffraction_reduction = {reduction.reduction_inputs['mode'] == 'diffraction'}"
+                continue
+
+        script.value = "\n".join(lines)
+        logger.info("Transform complete for reduction %s", reduction.id)
