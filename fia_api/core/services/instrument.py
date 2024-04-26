@@ -1,6 +1,7 @@
 """
 Service Layer for instruments
 """
+
 from typing import Sequence, Any, Dict
 
 from fia_api.core.exceptions import MissingRecordError
