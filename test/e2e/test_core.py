@@ -338,3 +338,377 @@ def test_readiness_and_liveness_probes():
     response = client.get("/healthz")
     assert response.status_code == 200
     assert response.text == '"ok"'
+
+
+def test_get_all_instruments():
+    """
+    Test all instruments returned
+    :return: None
+    """
+    response = client.get("/instrument")
+    assert response.status_code == 200
+    assert response.json() == [
+        {"instrument_name": "TEST", "specification": {}},
+        {
+            "instrument_name": "HIFI",
+            "specification": {
+                "at": "mbmdCddHpPzSiAPeXjOZ",
+                "attack": True,
+                "form": True,
+                "free": "JxwnwBaRizPWYaJEEhZo",
+                "include": 5189,
+                "inside": True,
+                "listen": "nOOUTysjkksQeNeDrlYc",
+                "lose": 8662,
+                "plant": 533578946923.7,
+                "white": "KRFgkCLOQGICXZkpBcSm",
+            },
+        },
+        {
+            "instrument_name": "MERLIN",
+            "specification": {
+                "foot": False,
+                "issue": True,
+                "national": "ZMDtuWUIUWStyPtMzrxg",
+                "party": 9659,
+                "player": 193252073471.833,
+                "professor": True,
+                "tell": 9011,
+                "within": 4140,
+                "yard": 6469583751.76843,
+            },
+        },
+        {
+            "instrument_name": "CRISP",
+            "specification": {
+                "affect": "qWMvnaTbQYDiTYKAtskJ",
+                "child": False,
+                "down": "LiKJClYPAlHuDqGdpYTp",
+                "industry": 64533.7155233099,
+            },
+        },
+        {
+            "instrument_name": "LET",
+            "specification": {
+                "example": True,
+                "popular": "pSdnMntgJeRAkVAuUzgQ",
+                "sell": "nYhVSSceQytZcBxguKTb",
+                "six": True,
+            },
+        },
+        {
+            "instrument_name": "CHRONUS",
+            "specification": {
+                "exist": False,
+                "head": False,
+                "machine": 4471,
+                "official": 33.4458643181171,
+                "participant": "PHCjeCSWbXdTxNonPjpi",
+                "politics": 9922,
+                "receive": 6800273280538.43,
+                "throw": "tSXWAgOkXzsCWvQvaCOr",
+                "where": False,
+            },
+        },
+        {"instrument_name": "INTER", "specification": {"end": "vGGWOSNQFsnKTChRzycA", "skill": False}},
+        {"instrument_name": "HET", "specification": {"stop": False}},
+        {
+            "instrument_name": "OFFSPEC",
+            "specification": {
+                "benefit": -70223.8306026133,
+                "part": False,
+                "pressure": 883,
+                "respond": True,
+                "share": "jlwCnoByuftICCRLJbqJ",
+            },
+        },
+        {
+            "instrument_name": "LOQ",
+            "specification": {
+                "all": True,
+                "film": False,
+                "nature": "VPgBDZOKMsXHuyYBihJD",
+                "north": "jvLcfCnfnGBedSHjSbtS",
+                "party": 617300258.68013,
+                "science": "pPBvqoMBagqLODxoxsMt",
+                "serve": 3276,
+                "theory": 6.95083928155888,
+                "they": True,
+                "three": True,
+                "watch": 9798,
+            },
+        },
+        {
+            "instrument_name": "ZOOM",
+            "specification": {
+                "alone": -46717908466.2926,
+                "energy": True,
+                "knowledge": False,
+                "seven": -86.1573618178849,
+                "shake": "mOwopYrRvsqXAtppgCLi",
+                "try": 5337,
+            },
+        },
+        {
+            "instrument_name": "NILE",
+            "specification": {
+                "board": 9511,
+                "green": -273.23403846507,
+                "mention": 9924,
+                "price": True,
+                "song": 6779,
+                "story": "NLsUKcGpVfAomhnvGUdR",
+                "traditional": -259483158.354832,
+            },
+        },
+        {
+            "instrument_name": "VESUVIO",
+            "specification": {
+                "Republican": 83466506.2549855,
+                "company": "OxsAkyrZhScfTVnCctqq",
+                "executive": 25.4283046849141,
+                "fish": False,
+                "market": -33473.1332484466,
+                "network": True,
+                "order": 478333769017.567,
+                "southern": False,
+                "ten": False,
+                "there": "kegZHgJXFmYKjNADtpvB",
+            },
+        },
+        {
+            "instrument_name": "ALF",
+            "specification": {"south": 7174, "suffer": 6915.3117513184, "throw": "nzxHPebRwNaxLlXUbbCW"},
+        },
+        {
+            "instrument_name": "TOSCA",
+            "specification": {
+                "also": "WIEGRRErHkAzRFIWSFMV",
+                "cell": -47641.4394482745,
+                "fine": 9125,
+                "name": "ZbnCaNeQbBkpztuHkjJp",
+                "trade": "KKGBjUmEYALxOsxWFsWH",
+                "with": -0.58756507572524,
+            },
+        },
+        {
+            "instrument_name": "HRPD",
+            "specification": {
+                "left": 789,
+                "purpose": 6264,
+                "range": False,
+                "rich": "zuHtRCZBenfMeYYGYJeS",
+                "walk": 3905,
+                "wife": -74461639683.4509,
+                "wonder": "NHtAPkppCiKyegFAtiwW",
+            },
+        },
+        {
+            "instrument_name": "POLREF",
+            "specification": {
+                "education": 195,
+                "else": -699466001.810712,
+                "pretty": True,
+                "save": "rfACGUNgEykGXulmYrmJ",
+                "system": 76695854.819194,
+                "ten": "DsiOVqTsIZOcwtpQwKHA",
+                "within": 7077,
+            },
+        },
+        {"instrument_name": "EMU", "specification": {"gas": True, "interest": 5555, "population": 3290, "try": False}},
+        {
+            "instrument_name": "NIMROD",
+            "specification": {
+                "article": -1986541.17169435,
+                "central": False,
+                "citizen": 5166,
+                "gas": 1442,
+                "mother": 4201,
+                "newspaper": "DJlkDTvabpFelJZrFAbr",
+                "quite": 9404,
+                "road": 1857,
+                "sort": "seZpmBseWtLJeraUXfWP",
+                "task": 9931,
+            },
+        },
+        {
+            "instrument_name": "LARMOR",
+            "specification": {
+                "bring": 5728,
+                "different": 8788,
+                "model": "cPSqtEVuTNhVahIctgyR",
+                "personal": "bdRcogebHMJRIuGYHmdW",
+                "where": 46298.6643995838,
+            },
+        },
+        {
+            "instrument_name": "SANS2D",
+            "specification": {
+                "computer": "MrhnsoyhgnkPBkwTECuk",
+                "deep": False,
+                "improve": True,
+                "indicate": True,
+                "key": False,
+                "once": True,
+                "say": "hIbvvhFICWShkLuMjphz",
+                "suggest": -5.21319909211595,
+                "system": -83402346725502.1,
+            },
+        },
+        {"instrument_name": "CHIPIR", "specification": {"notice": 6626}},
+        {"instrument_name": "OSIRIS", "specification": {"particularly": -5.41145308203559, "white": 3543}},
+        {
+            "instrument_name": "SURF",
+            "specification": {
+                "area": 4385,
+                "article": "SGmkAgVKQtWgLnagkNtz",
+                "collection": "EdTDeuADpnsXcXTapMPE",
+                "four": False,
+                "present": 1692,
+                "station": "eMSRjjASusmIENZrccFU",
+                "them": "HIVASYNvofRgDxclQCWV",
+            },
+        },
+        {"instrument_name": "MARI", "specification": {"call": False, "now": False, "term": False}},
+        {"instrument_name": "INES", "specification": {"particularly": -83433072.9805075}},
+        {
+            "instrument_name": "POLARIS",
+            "specification": {
+                "act": -36184.8304433321,
+                "cause": False,
+                "note": 470.854828913736,
+                "question": False,
+                "teacher": 82.9329268436538,
+                "wide": -7150354.1664076,
+            },
+        },
+        {
+            "instrument_name": "SXD",
+            "specification": {
+                "attorney": 603611.624630889,
+                "herself": False,
+                "just": -10572249544532.8,
+                "policy": "vTvsrntKNmPNuoOeKVXv",
+                "stand": 1619,
+                "store": 4627,
+                "street": True,
+                "treatment": "bBfrWNbtdUeCrVCVVshE",
+            },
+        },
+        {
+            "instrument_name": "MUSR",
+            "specification": {
+                "eye": 7859,
+                "field": False,
+                "kitchen": "dkhLfiOfHjawXclvcHWM",
+                "lead": "OJeuIpAVgSfuVkBvUZpz",
+                "rock": 4.39233171420508,
+                "sister": -96215447570.6965,
+            },
+        },
+        {
+            "instrument_name": "GEM",
+            "specification": {
+                "building": 222924497.683724,
+                "lot": True,
+                "nor": "RaIefUcmZvgimMfVtYVp",
+                "organization": True,
+                "wish": False,
+            },
+        },
+        {
+            "instrument_name": "IMAT",
+            "specification": {
+                "card": -16366237521.395,
+                "community": 83456628376.8749,
+                "gas": "XBEbYmnihkqNRxSSisvg",
+                "left": 9347,
+                "prevent": "DapJLHdtPwJNqgLsCrMD",
+                "when": "HtkaoFTRAZyRvMZpiGBs",
+                "where": -4364879366782.48,
+            },
+        },
+        {
+            "instrument_name": "ENGINX",
+            "specification": {
+                "big": "giBnrAnrfmXOLzEOqvtZ",
+                "exactly": False,
+                "hundred": True,
+                "represent": 8.711785453109,
+                "third": 2048,
+                "work": 1436949884546.34,
+            },
+        },
+        {
+            "instrument_name": "WISH",
+            "specification": {
+                "PM": "RNHflFHYWwOcFAipcTlI",
+                "brother": 67.8826215722,
+                "final": 2892,
+                "official": "PThRhcorExPIgkMgXQlo",
+                "past": "BraakkpCnmkUmCxrvajH",
+                "race": 3577,
+                "take": True,
+                "wrong": False,
+            },
+        },
+        {"instrument_name": "PEARL", "specification": {"stuff": True, "time": -6.20429445757731}},
+        {
+            "instrument_name": "ARGUS",
+            "specification": {
+                "age": 2762.32221869268,
+                "discuss": -91973778293.2834,
+                "during": 318104.305113796,
+                "early": 2.17013638446512,
+                "figure": 2682.48933658041,
+                "hair": False,
+                "machine": True,
+                "research": -9.4861272855624,
+                "sort": False,
+                "with": 480.33519422558,
+            },
+        },
+        {
+            "instrument_name": "MAPS",
+            "specification": {"baby": 135, "she": False, "teach": -80124.43351582, "though": -899617208433.3},
+        },
+        {
+            "instrument_name": "SANDALS",
+            "specification": {
+                "agree": "XauGMVBuaPZVIrmOWXjE",
+                "bad": 662,
+                "boy": -85.5075856528676,
+                "cover": "mOgHuDHyYmaXqovEZKqB",
+                "read": 7002,
+                "successful": 2527,
+                "yeah": 8258,
+            },
+        },
+        {
+            "instrument_name": "IRIS",
+            "specification": {
+                "again": -817754255.260494,
+                "audience": False,
+                "available": "uJFkkUndRBtAMiHLQoFm",
+                "color": 7400,
+                "community": True,
+                "hear": -286859867665.887,
+                "level": 500,
+                "movement": "GiYxVLFnBhhLsNmLLpfu",
+                "realize": 4239,
+                "see": 970855799376.76,
+                "young": "UlbKQYFrRgKeuztimQyE",
+            },
+        },
+    ]
+
+
+def test_get_instrument_specification():
+    """
+    Test correct spec for instrument returned
+    :return:
+    """
+
+    response = client.get("/instrument/het/specification")
+    assert response.status_code == 200
+    assert response.json() == {"stop": False}
