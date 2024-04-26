@@ -131,3 +131,7 @@ class ReductionWithRunsResponse(ReductionResponse):
             id=reduction.id,
             runs=[RunResponse.from_run(run) for run in reduction.runs],
         )
+
+
+class InstrumentResponse(BaseModel):
+    instrument_name: str
