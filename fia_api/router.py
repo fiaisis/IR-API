@@ -17,7 +17,11 @@ from fia_api.core.responses import (
     RunResponse,
     InstrumentResponse,
 )
-from fia_api.core.services.instrument import get_all_instruments
+from fia_api.core.services.instrument import (
+    get_all_instruments,
+    get_specification_by_instrument_name,
+    update_specification_for_instrument,
+)
 from fia_api.core.services.reduction import (
     get_reductions_by_instrument,
     get_reduction_by_id,
@@ -243,9 +247,31 @@ async def get_instruments() -> Sequence[InstrumentResponse]:
     \f
     :return: Sequence of instruments
     """
-    return [InstrumentResponse(instrument_name=instrument.instrument_name) for instrument in get_all_instruments()]
+    return [
+        InstrumentResponse(instrument_name=instrument.instrument_name, specification=instrument.specification)
+        for instrument in get_all_instruments()
+    ]
 
 
 @ROUTER.get("/instrument/{instrument_name}/specification", tags=["instrument"])
 async def get_instrument_specification(instrument_name: str) -> Dict[str, Any]:
-    pass
+    """
+    Return the specification for the given instrument
+    \f
+    :param instrument_name: The instrument
+    :return: The specificaiton
+    """
+    return get_specification_by_instrument_name(instrument_name.upper())
+
+
+@ROUTER.put("/instrument/{instrument_name}/specification", tags=["instrument"])
+async def update_instrument_specification(instrument_name: str, specification: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Replace the current specification with the given specification for the given instrument
+    \f
+    :param instrument_name: The instrument name
+    :param specification: The new specification
+    :return: The new specification
+    """
+    update_specification_for_instrument(instrument_name.upper(), specification)
+    return specification
