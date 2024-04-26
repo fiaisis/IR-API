@@ -135,3 +135,4 @@ class ReductionWithRunsResponse(ReductionResponse):
 
 class InstrumentResponse(BaseModel):
     instrument_name: str
+    specification: dict
