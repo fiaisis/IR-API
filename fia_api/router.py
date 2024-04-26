@@ -4,8 +4,7 @@ Module containing the REST endpoints
 
 from __future__ import annotations
 
-
-from typing import Optional, List, Literal
+from typing import Optional, List, Literal, Sequence, Any, Dict
 
 from fastapi import APIRouter
 from starlette.background import BackgroundTasks
@@ -16,7 +15,9 @@ from fia_api.core.responses import (
     ReductionWithRunsResponse,
     CountResponse,
     RunResponse,
+    InstrumentResponse,
 )
+from fia_api.core.services.instrument import get_all_instruments
 from fia_api.core.services.reduction import (
     get_reductions_by_instrument,
     get_reduction_by_id,
@@ -35,13 +36,13 @@ from fia_api.scripts.pre_script import PreScript
 ROUTER = APIRouter()
 
 
-@ROUTER.get("/healthz")
+@ROUTER.get("/healthz", tags=["k8s"])
 async def get() -> Literal["ok"]:
     """Health Check endpoint."""
     return "ok"
 
 
-@ROUTER.get("/instrument/{instrument}/script")
+@ROUTER.get("/instrument/{instrument}/script", tags=["scripts"])
 async def get_pre_script(
     instrument: str,
     background_tasks: BackgroundTasks,
@@ -65,7 +66,7 @@ async def get_pre_script(
         # write the script after to not slow down request
 
 
-@ROUTER.get("/instrument/{instrument}/script/sha/{sha}")
+@ROUTER.get("/instrument/{instrument}/script/sha/{sha}", tags=["scripts"])
 async def get_pre_script_by_sha(instrument: str, sha: str, reduction_id: Optional[int] = None) -> PreScriptResponse:
     """
     Given an instrument and the commit sha of a script, obtain the pre script. Optionally providing a reduction id to
@@ -93,7 +94,7 @@ OrderField = Literal[
 ]
 
 
-@ROUTER.get("/instrument/{instrument}/reductions")
+@ROUTER.get("/instrument/{instrument}/reductions", tags=["reductions"])
 async def get_reductions_for_instrument(
     instrument: str,
     limit: int = 0,
@@ -123,7 +124,7 @@ async def get_reductions_for_instrument(
     return [ReductionResponse.from_reduction(r) for r in reductions]
 
 
-@ROUTER.get("/instrument/{instrument}/reductions/count")
+@ROUTER.get("/instrument/{instrument}/reductions/count", tags=["reductions"])
 async def count_reductions_for_instrument(
     instrument: str,
 ) -> CountResponse:
@@ -137,7 +138,7 @@ async def count_reductions_for_instrument(
     return CountResponse(count=count_reductions_by_instrument(instrument))
 
 
-@ROUTER.get("/reduction/{reduction_id}")
+@ROUTER.get("/reduction/{reduction_id}", tags=["reductions"])
 async def get_reduction(reduction_id: int) -> ReductionWithRunsResponse:
     """
     Retrieve a reduction with nested run data, by iD.
@@ -149,7 +150,7 @@ async def get_reduction(reduction_id: int) -> ReductionWithRunsResponse:
     return ReductionWithRunsResponse.from_reduction(reduction)
 
 
-@ROUTER.get("/experiment/{experiment_number}/reductions")
+@ROUTER.get("/experiment/{experiment_number}/reductions", tags=["reductions"])
 async def get_reductions_for_experiment(
     experiment_number: int,
     limit: int = 0,
@@ -175,7 +176,7 @@ async def get_reductions_for_experiment(
     ]
 
 
-@ROUTER.get("/reductions/count")
+@ROUTER.get("/reductions/count", tags=["reductions"])
 async def count_all_reductions() -> CountResponse:
     """
     Count all reductions
@@ -185,7 +186,7 @@ async def count_all_reductions() -> CountResponse:
     return CountResponse(count=count_reductions())
 
 
-@ROUTER.get("/runs/count")
+@ROUTER.get("/runs/count", tags=["runs"])
 async def count_all_runs() -> CountResponse:
     """
     Count all runs
@@ -195,7 +196,7 @@ async def count_all_runs() -> CountResponse:
     return CountResponse(count=get_total_run_count())
 
 
-@ROUTER.get("/instrument/{instrument}/runs/count")
+@ROUTER.get("/instrument/{instrument}/runs/count", tags=["runs"])
 async def count_runs_for_instrument(instrument: str) -> CountResponse:
     """
     Count the total runs for the given instrument
@@ -207,7 +208,7 @@ async def count_runs_for_instrument(instrument: str) -> CountResponse:
     return CountResponse(count=get_run_count_by_instrument(instrument))
 
 
-@ROUTER.get("/instrument/{instrument}/runs")
+@ROUTER.get("/instrument/{instrument}/runs", tags=["runs"])
 async def get_runs_for_instrument(
     instrument: str,
     limit: int = 0,
@@ -233,3 +234,18 @@ async def get_runs_for_instrument(
             instrument.upper(), limit=limit, offset=offset, order_by=order_by, order_direction=order_direction
         )
     ]
+
+
+@ROUTER.get("/instrument", tags=["instrument"])
+async def get_instruments() -> Sequence[InstrumentResponse]:
+    """
+    Get all instruments
+    \f
+    :return: Sequence of instruments
+    """
+    return [InstrumentResponse(instrument_name=instrument.instrument_name) for instrument in get_all_instruments()]
+
+
+@ROUTER.get("/instrument/{instrument_name}/specification", tags=["instrument"])
+async def get_instrument_specification(instrument_name: str) -> Dict[str, Any]:
+    pass
