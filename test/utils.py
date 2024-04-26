@@ -83,6 +83,9 @@ class FIAProvider(BaseProvider):
         """
         instrument = Instrument()
         instrument.instrument_name = random.choice(self.INSTRUMENTS)
+        instrument.specification = faker.pydict(
+            nb_elements=faker.pyint(min_value=1, max_value=10), value_types=[str, int, bool, float]
+        )
         return instrument
 
     def run(self, instrument: Instrument) -> Run:
