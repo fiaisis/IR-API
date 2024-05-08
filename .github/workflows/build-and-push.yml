@@ -33,29 +33,20 @@ jobs:
       with:
         file: ./container/fia_api.D
         push: true
-        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/fia-api:${{ github.sha }}
-
-    - name: Docker build detailed outputs
-      run: |
-        echo "Docker digest: ${{ needs.docker_build.outputs.digest }}"
-        echo "Docker imageId: ${{ needs.docker_build.outputs.imageid }}"
-        echo "Docker metadata: ${{ needs.docker_build.outputs.metadata }}"
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/fia-api
 
     - name: Checkout the Gitops repository
-      if: steps.docker_build.outputs.cache-hit == 'false'  # If a new container was pushed
       uses: actions/checkout@v2
       with:
         repository: https://github.com/fiaisis/gitops.git 
         token: ${{ secrets.GITOPS_STAGING_EDIT_TOKEN }}
 
     - name: Edit the YAML fia-api file for staging
-      if: steps.docker_build.outputs.cache-hit == 'false'  # If a new container was pushed
       uses: mikefarah/yq@v4.43.1
       with:
         cmd: yq e -i '.spec.template.spec.containers[] |= select(.name == "fia-api").image = "ghcr.io/fiaisis/fia-api@sha256:${{ steps.docker_build.outputs.digest }}"' './components/fia-api/overlays/staging/fia-api.yml'
 
     - name: Commit and push changes
-      if: steps.docker_build.outputs.cache-hit == 'false'  # If a new container was pushed
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
