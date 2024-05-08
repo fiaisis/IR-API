@@ -36,9 +36,9 @@ jobs:
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/fia-api
 
     - name: Checkout the Gitops repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
-        repository: https://github.com/fiaisis/gitops.git 
+        repository: fiaisis/gitops
         token: ${{ secrets.GITOPS_STAGING_EDIT_TOKEN }}
 
     - name: Edit the YAML fia-api file for staging
