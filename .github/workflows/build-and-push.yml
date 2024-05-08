@@ -1,0 +1,63 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.WRITE_PACKAGE_TOKEN }}
+
+    - name: Build and push fia-api Docker image
+      id: docker_build
+      uses: docker/build-push-action@v5
+      with:
+        file: ./container/fia_api.D
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/fia-api:${{ github.sha }}
+
+    - name: Docker build detailed outputs
+      run: |
+        echo "Docker digest: ${{ needs.docker_build.outputs.digest }}"
+        echo "Docker imageId: ${{ needs.docker_build.outputs.imageid }}"
+        echo "Docker metadata: ${{ needs.docker_build.outputs.metadata }}"
+
+    - name: Checkout the Gitops repository
+      if: steps.docker_build.outputs.cache-hit == 'false'  # If a new container was pushed
+      uses: actions/checkout@v2
+      with:
+        repository: https://github.com/fiaisis/gitops.git 
+        token: ${{ secrets.GITOPS_STAGING_EDIT_TOKEN }}
+
+    - name: Edit the YAML fia-api file for staging
+      if: steps.docker_build.outputs.cache-hit == 'false'  # If a new container was pushed
+      uses: mikefarah/yq@v4.43.1
+      with:
+        cmd: yq e -i '.spec.template.spec.containers[] |= select(.name == "fia-api").image = "ghcr.io/fiaisis/fia-api@sha256:${{ steps.docker_build.outputs.digest }}"' './components/fia-api/overlays/staging/fia-api.yml'
+
+    - name: Commit and push changes
+      if: steps.docker_build.outputs.cache-hit == 'false'  # If a new container was pushed
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -am "Update fia-api to use sha256:${{ steps.docker_build.outputs.digest }}"
+        git push
