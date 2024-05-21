@@ -64,9 +64,10 @@ class Script(Base):
     __tablename__ = "scripts"
     script: Mapped[str] = mapped_column(String())
     sha: Mapped[Optional[str]] = mapped_column(String())
+    script_hash: Mapped[str] = mapped_column(String())
 
     def __repr__(self) -> str:
-        return f"Script(id={self.id}, sha='{self.sha}', value='{self.script}')"
+        return f"Script(id={self.id}, sha='{self.sha}', script_hash='{self.script_hash}', value='{self.script}')"
 
 
 class Reduction(Base):
@@ -81,6 +82,7 @@ class Reduction(Base):
     reduction_status_message: Mapped[Optional[str]] = mapped_column(String())
     reduction_inputs: Mapped[JSONB] = mapped_column(JSONB)
     reduction_outputs: Mapped[Optional[str]] = mapped_column(String())
+    stacktrace: Mapped[Optional[str]] = mapped_column(String())
     script_id: Mapped[Optional[int]] = mapped_column(ForeignKey("scripts.id"))
     script: Mapped[Optional["Script"]] = relationship("Script", lazy="joined")
     runs: Mapped[List[Run]] = relationship(

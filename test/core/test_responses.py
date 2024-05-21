@@ -27,6 +27,7 @@ REDUCTION = Reduction(
     reduction_inputs={"ei": "auto"},
     reduction_outputs="some output",
     script=Script(script="print('foo')"),
+    stacktrace="some stacktrace",
     runs=[RUN],
 )
 
@@ -63,6 +64,7 @@ def test_reduction_response_from_reduction():
     assert response.reduction_inputs == REDUCTION.reduction_inputs
     assert response.reduction_outputs == REDUCTION.reduction_outputs
     assert response.reduction_status_message == REDUCTION.reduction_status_message
+    assert response.stacktrace == REDUCTION.stacktrace
 
 
 def test_reduction_with_runs_response_from_reduction():

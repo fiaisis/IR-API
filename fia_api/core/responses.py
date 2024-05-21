@@ -83,6 +83,7 @@ class ReductionResponse(BaseModel):
     reduction_status_message: Optional[str]
     reduction_inputs: Any
     reduction_outputs: Optional[str]
+    stacktrace: Optional[str]
     script: Optional[ScriptResponse]
 
     @staticmethod
@@ -101,6 +102,7 @@ class ReductionResponse(BaseModel):
             reduction_inputs=reduction.reduction_inputs,
             reduction_outputs=reduction.reduction_outputs,
             script=script,
+            stacktrace=reduction.stacktrace,
             id=reduction.id,
         )
 
@@ -129,5 +131,6 @@ class ReductionWithRunsResponse(ReductionResponse):
             reduction_outputs=reduction.reduction_outputs,
             script=script,
             id=reduction.id,
+            stacktrace=reduction.stacktrace,
             runs=[RunResponse.from_run(run) for run in reduction.runs],
         )
