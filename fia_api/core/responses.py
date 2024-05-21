@@ -22,6 +22,7 @@ class ScriptResponse(BaseModel):
     """
     ScriptResponse returns from the API a script value
     """
+
     value: str
 
 
