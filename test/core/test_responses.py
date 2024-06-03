@@ -59,7 +59,7 @@ def test_reduction_response_from_reduction(from_script):
     :return: None
     """
     response = ReductionResponse.from_reduction(REDUCTION)
-    from_script.assert_called_once_with(REDUCTION.script.script)
+    from_script.assert_called_once_with(REDUCTION.script)
     assert not hasattr(response, "runs")
     assert response.id == REDUCTION.id
     assert response.reduction_state == REDUCTION.reduction_state
@@ -79,7 +79,7 @@ def test_reduction_with_runs_response_from_reduction(from_script):
     :return: None
     """
     response = ReductionWithRunsResponse.from_reduction(REDUCTION)
-    from_script.assert_called_once_with(REDUCTION.script.script)
+    from_script.assert_called_once_with(REDUCTION.script)
     assert response.id == REDUCTION.id
     assert response.reduction_state == REDUCTION.reduction_state
     assert response.script.value == REDUCTION.script.script

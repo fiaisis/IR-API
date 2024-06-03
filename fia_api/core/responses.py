@@ -104,7 +104,7 @@ class ReductionResponse(BaseModel):
         :param reduction: The Reduction to convert
         :return: The ReductionResponse object
         """
-        script = ScriptResponse.from_script(reduction.script.script) if reduction.script else None
+        script = ScriptResponse.from_script(reduction.script) if isinstance(reduction.script, Script) else None
         return ReductionResponse(
             reduction_start=reduction.reduction_start,
             reduction_end=reduction.reduction_end,
@@ -132,7 +132,7 @@ class ReductionWithRunsResponse(ReductionResponse):
         :param reduction: The Reduction to convert
         :return: The ReductionWithRunsResponse Object
         """
-        script = ScriptResponse.from_script(reduction.script.script) if reduction.script else None
+        script = ScriptResponse.from_script(reduction.script) if isinstance(reduction.script, Script) else None
         return ReductionWithRunsResponse(
             reduction_start=reduction.reduction_start,
             reduction_end=reduction.reduction_end,
