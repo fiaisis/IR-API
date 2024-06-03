@@ -48,16 +48,16 @@ def test_no_raise_when_no_bad_characters():
     assert forbid_path_characters(dummy_string_arg_function)("hello") == "hello"
 
 
-ghp_script = (
+GHP_SCRIPT = (
     "from mantid.kernel import ConfigService\n"
     'ConfigService.Instance()["network.github.api_token"] = "ghp_random_token"'
     "\nfrom mantid.simpleapi import *"
 )
-script = "from mantid.kernel import ConfigService" "\nfrom mantid.simpleapi import *"
-expected_script = "from mantid.kernel import ConfigService" "\nfrom mantid.simpleapi import *"
+SCRIPT = "from mantid.kernel import ConfigService" "\nfrom mantid.simpleapi import *"
+EXPECTED_SCRIPT = "from mantid.kernel import ConfigService" "\nfrom mantid.simpleapi import *"
 
 
-@pytest.mark.parametrize("input_script,expected_script", [(ghp_script, expected_script), (script, expected_script)])
+@pytest.mark.parametrize("input_script,expected_script", [(GHP_SCRIPT, EXPECTED_SCRIPT), (SCRIPT, EXPECTED_SCRIPT)])
 def test_filter_script_for_tokens(input_script, expected_script):
     output_script = filter_script_for_tokens(input_script)
 
