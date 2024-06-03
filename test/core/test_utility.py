@@ -53,12 +53,15 @@ GHP_SCRIPT = (
     'ConfigService.Instance()["network.github.api_token"] = "ghp_random_token"'
     "\nfrom mantid.simpleapi import *"
 )
-SCRIPT = "from mantid.kernel import ConfigService" "\nfrom mantid.simpleapi import *"
-EXPECTED_SCRIPT = "from mantid.kernel import ConfigService" "\nfrom mantid.simpleapi import *"
+SCRIPT = "from mantid.kernel import ConfigService\nfrom mantid.simpleapi import *"
+EXPECTED_SCRIPT = "from mantid.kernel import ConfigService\nfrom mantid.simpleapi import *"
 
 
 @pytest.mark.parametrize("input_script,expected_script", [(GHP_SCRIPT, EXPECTED_SCRIPT), (SCRIPT, EXPECTED_SCRIPT)])
 def test_filter_script_for_tokens(input_script, expected_script):
+    """
+    Test the filter script for tokens
+    """
     output_script = filter_script_for_tokens(input_script)
 
     assert output_script == expected_script
