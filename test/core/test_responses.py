@@ -52,12 +52,14 @@ def test_run_response_from_run():
     assert response.instrument_name == RUN.instrument.instrument_name
 
 
-def test_reduction_response_from_reduction():
+@mock.patch("fia_api.core.responses.ScriptResponse.from_script", return_value=ScriptResponse(value="print('foo')"))
+def test_reduction_response_from_reduction(from_script):
     """
     Test that reduction response can be built from reduction
     :return: None
     """
     response = ReductionResponse.from_reduction(REDUCTION)
+    from_script.assert_called_once_with(REDUCTION.script.script)
     assert not hasattr(response, "runs")
     assert response.id == REDUCTION.id
     assert response.reduction_state == REDUCTION.reduction_state
@@ -70,12 +72,14 @@ def test_reduction_response_from_reduction():
     assert response.stacktrace == REDUCTION.stacktrace
 
 
-def test_reduction_with_runs_response_from_reduction():
+@mock.patch("fia_api.core.responses.ScriptResponse.from_script", return_value=ScriptResponse(value="print('foo')"))
+def test_reduction_with_runs_response_from_reduction(from_script):
     """
     Test reduction response can be built to include runs
     :return: None
     """
     response = ReductionWithRunsResponse.from_reduction(REDUCTION)
+    from_script.assert_called_once_with(REDUCTION.script.script)
     assert response.id == REDUCTION.id
     assert response.reduction_state == REDUCTION.reduction_state
     assert response.script.value == REDUCTION.script.script
