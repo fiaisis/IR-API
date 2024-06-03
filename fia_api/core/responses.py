@@ -9,7 +9,8 @@ from typing import Optional, Any, List
 
 from pydantic import BaseModel
 
-from fia_api.core.model import ReductionState, Reduction, Run
+from fia_api.core.model import ReductionState, Reduction, Run, Script
+from fia_api.core.utility import filter_script_for_tokens
 
 
 class CountResponse(BaseModel):
@@ -24,6 +25,16 @@ class ScriptResponse(BaseModel):
     """
 
     value: str
+
+    @staticmethod
+    def from_script(script: Script) -> ScriptResponse:
+        """
+        Given a script return a ScriptResponse, filtered for tokens.
+        :param script: The script to convert
+        :return: The ScriptResponse object
+        """
+        script_to_send = filter_script_for_tokens(script.script)
+        return ScriptResponse(value=script_to_send)
 
 
 class PreScriptResponse(BaseModel):
