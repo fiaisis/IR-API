@@ -9,7 +9,8 @@ from typing import Optional, Any, List
 
 from pydantic import BaseModel
 
-from fia_api.core.model import ReductionState, Reduction, Run
+from fia_api.core.model import ReductionState, Reduction, Run, Script
+from fia_api.core.utility import filter_script_for_tokens
 
 
 class CountResponse(BaseModel):
@@ -24,6 +25,16 @@ class ScriptResponse(BaseModel):
     """
 
     value: str
+
+    @staticmethod
+    def from_script(script: Script) -> ScriptResponse:
+        """
+        Given a script return a ScriptResponse, filtered for tokens.
+        :param script: The script to convert
+        :return: The ScriptResponse object
+        """
+        script_to_send = filter_script_for_tokens(script.script)
+        return ScriptResponse(value=script_to_send)
 
 
 class PreScriptResponse(BaseModel):
@@ -93,7 +104,7 @@ class ReductionResponse(BaseModel):
         :param reduction: The Reduction to convert
         :return: The ReductionResponse object
         """
-        script = ScriptResponse(value=reduction.script.script) if reduction.script else None
+        script = ScriptResponse.from_script(reduction.script) if isinstance(reduction.script, Script) else None
         return ReductionResponse(
             reduction_start=reduction.reduction_start,
             reduction_end=reduction.reduction_end,
@@ -117,11 +128,11 @@ class ReductionWithRunsResponse(ReductionResponse):
     @staticmethod
     def from_reduction(reduction: Reduction) -> ReductionWithRunsResponse:
         """
-        Given a Reduction, return the ReductionWithRunsReponse
+        Given a Reduction, return the ReductionWithRunsResponse
         :param reduction: The Reduction to convert
         :return: The ReductionWithRunsResponse Object
         """
-        script = ScriptResponse(value=reduction.script.script) if reduction.script else None
+        script = ScriptResponse.from_script(reduction.script) if isinstance(reduction.script, Script) else None
         return ReductionWithRunsResponse(
             reduction_start=reduction.reduction_start,
             reduction_end=reduction.reduction_end,

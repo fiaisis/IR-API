@@ -5,7 +5,7 @@ Tests for utility functions
 import pytest
 
 from fia_api.core.exceptions import UnsafePathError
-from fia_api.core.utility import forbid_path_characters
+from fia_api.core.utility import forbid_path_characters, filter_script_for_tokens
 
 
 def dummy_string_arg_function(arg: str) -> str:
@@ -46,3 +46,22 @@ def test_no_raise_when_no_bad_characters():
     :return:
     """
     assert forbid_path_characters(dummy_string_arg_function)("hello") == "hello"
+
+
+GHP_SCRIPT = (
+    "from mantid.kernel import ConfigService\n"
+    'ConfigService.Instance()["network.github.api_token"] = "ghp_random_token"'
+    "\nfrom mantid.simpleapi import *"
+)
+SCRIPT = "from mantid.kernel import ConfigService\nfrom mantid.simpleapi import *"
+EXPECTED_SCRIPT = "from mantid.kernel import ConfigService\nfrom mantid.simpleapi import *"
+
+
+@pytest.mark.parametrize("input_script,expected_script", [(GHP_SCRIPT, EXPECTED_SCRIPT), (SCRIPT, EXPECTED_SCRIPT)])
+def test_filter_script_for_tokens(input_script, expected_script):
+    """
+    Test the filter script for tokens
+    """
+    output_script = filter_script_for_tokens(input_script)
+
+    assert output_script == expected_script

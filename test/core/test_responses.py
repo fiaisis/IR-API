@@ -3,9 +3,10 @@ Test cases for response objects
 """
 
 import datetime
+from unittest import mock
 
 from fia_api.core.model import Run, Instrument, Reduction, ReductionState, Script
-from fia_api.core.responses import RunResponse, ReductionResponse, ReductionWithRunsResponse
+from fia_api.core.responses import RunResponse, ReductionResponse, ReductionWithRunsResponse, ScriptResponse
 
 RUN = Run(
     filename="filename",
@@ -19,6 +20,8 @@ RUN = Run(
     instrument=Instrument(instrument_name="instrument name"),
 )
 
+SCRIPT = Script(script="print('foo')")
+
 REDUCTION = Reduction(
     id=1,
     reduction_start=datetime.datetime(2000, 1, 1, 1, 1, 1),
@@ -26,7 +29,7 @@ REDUCTION = Reduction(
     reduction_state=ReductionState.SUCCESSFUL,
     reduction_inputs={"ei": "auto"},
     reduction_outputs="some output",
-    script=Script(script="print('foo')"),
+    script=SCRIPT,
     stacktrace="some stacktrace",
     runs=[RUN],
 )
@@ -49,12 +52,14 @@ def test_run_response_from_run():
     assert response.instrument_name == RUN.instrument.instrument_name
 
 
-def test_reduction_response_from_reduction():
+@mock.patch("fia_api.core.responses.ScriptResponse.from_script", return_value=ScriptResponse(value="print('foo')"))
+def test_reduction_response_from_reduction(from_script):
     """
     Test that reduction response can be built from reduction
     :return: None
     """
     response = ReductionResponse.from_reduction(REDUCTION)
+    from_script.assert_called_once_with(REDUCTION.script)
     assert not hasattr(response, "runs")
     assert response.id == REDUCTION.id
     assert response.reduction_state == REDUCTION.reduction_state
@@ -67,12 +72,14 @@ def test_reduction_response_from_reduction():
     assert response.stacktrace == REDUCTION.stacktrace
 
 
-def test_reduction_with_runs_response_from_reduction():
+@mock.patch("fia_api.core.responses.ScriptResponse.from_script", return_value=ScriptResponse(value="print('foo')"))
+def test_reduction_with_runs_response_from_reduction(from_script):
     """
     Test reduction response can be built to include runs
     :return: None
     """
     response = ReductionWithRunsResponse.from_reduction(REDUCTION)
+    from_script.assert_called_once_with(REDUCTION.script)
     assert response.id == REDUCTION.id
     assert response.reduction_state == REDUCTION.reduction_state
     assert response.script.value == REDUCTION.script.script
@@ -82,3 +89,14 @@ def test_reduction_with_runs_response_from_reduction():
     assert response.reduction_outputs == REDUCTION.reduction_outputs
     assert response.reduction_status_message == REDUCTION.reduction_status_message
     assert isinstance(response.runs[0], RunResponse)
+
+
+@mock.patch("fia_api.core.responses.filter_script_for_tokens", return_value=SCRIPT.script)
+def test_script_attempts_to_filter_tokens(filter_script_for_tokens):
+    """
+    Test script response calls the util function when calling "from_script"
+    :return: None
+    """
+    response: ScriptResponse = ScriptResponse.from_script(SCRIPT)
+    assert response.value == SCRIPT.script
+    filter_script_for_tokens.assert_called_once_with(SCRIPT.script)
