@@ -83,6 +83,9 @@ class FIAProvider(BaseProvider):
         """
         instrument = Instrument()
         instrument.instrument_name = random.choice(self.INSTRUMENTS)
+        instrument.specification = faker.pydict(
+            nb_elements=faker.pyint(min_value=1, max_value=10), value_types=[str, int, bool, float]
+        )
         return instrument
 
     def run(self, instrument: Instrument) -> Run:
@@ -157,7 +160,7 @@ class FIAProvider(BaseProvider):
 
 FIA_FAKER_PROVIDER = FIAProvider(faker)
 
-TEST_INSTRUMENT = Instrument(instrument_name="TEST")
+TEST_INSTRUMENT = Instrument(instrument_name="TEST", specification={})
 TEST_REDUCTION = Reduction(
     reduction_inputs={
         "ei": "'auto'",
@@ -196,6 +199,7 @@ def setup_database() -> None:
         for instrument in FIA_FAKER_PROVIDER.INSTRUMENTS:
             instrument_ = Instrument()
             instrument_.instrument_name = instrument
+            instrument_.specification = FIA_FAKER_PROVIDER.instrument().specification
             instruments.append(instrument_)
         for _ in range(5000):
             session.add(FIA_FAKER_PROVIDER.insertable_reduction(random.choice(instruments)))

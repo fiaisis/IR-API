@@ -145,3 +145,8 @@ class ReductionWithRunsResponse(ReductionResponse):
             stacktrace=reduction.stacktrace,
             runs=[RunResponse.from_run(run) for run in reduction.runs],
         )
+
+
+class InstrumentResponse(BaseModel):
+    instrument_name: str
+    specification: dict
