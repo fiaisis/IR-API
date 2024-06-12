@@ -6,7 +6,7 @@ information about instruments, runs, scripts, and reductions.
 from __future__ import annotations
 
 import enum
-from typing import TYPE_CHECKING
+from datetime import datetime  # noqa: TCH003 need to keep this for sqlalchemy inference
 
 from sqlalchemy import (
     Column,
@@ -20,9 +20,6 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-
-if TYPE_CHECKING:
-    from datetime import datetime
 
 
 class ReductionState(enum.Enum):
@@ -132,8 +129,8 @@ class Run(Base):
     experiment_number: Mapped[int] = mapped_column(Integer())
     title: Mapped[str] = mapped_column(String())
     users: Mapped[str] = mapped_column(String())
-    run_start: Mapped[datetime] = mapped_column(DateTime)
-    run_end: Mapped[datetime] = mapped_column(DateTime)
+    run_start: Mapped[datetime] = mapped_column(DateTime())
+    run_end: Mapped[datetime] = mapped_column(DateTime())
     good_frames: Mapped[int] = mapped_column(Integer())
     raw_frames: Mapped[int] = mapped_column(Integer())
     instrument_id: Mapped[int] = mapped_column(ForeignKey("instruments.id"))
