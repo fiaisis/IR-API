@@ -52,8 +52,8 @@ class MariTransform(Transform):
                 lines,
                 index,
                 "remove_bkg",
-                reduction.reduction_inputs["remove_bkg"],
-            ):  # type: ignore
+                reduction.reduction_inputs["remove_bkg"],  # type: ignore
+            ):
                 continue
         script.value = "\n".join(lines)
         logger.info("Transform complete for reduction %s", reduction.id)
