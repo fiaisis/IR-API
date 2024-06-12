@@ -75,7 +75,7 @@ class FIAProvider(BaseProvider):
             faker.pyint(min_value=0, max_value=23),
             faker.pyint(min_value=0, max_value=59),
             faker.pyint(min_value=0, max_value=59),
-            tzinfo=timezone.utc
+            tzinfo=timezone.utc,
         )
 
     def instrument(self) -> Instrument:
