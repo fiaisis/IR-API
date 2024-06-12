@@ -2,17 +2,17 @@
 Tests for reduction service
 """
 
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
 
 import pytest
 
 from fia_api.core.exceptions import MissingRecordError
 from fia_api.core.services.reduction import (
-    get_reductions_by_instrument,
-    get_reduction_by_id,
-    get_reductions_by_experiment_number,
     count_reductions,
     count_reductions_by_instrument,
+    get_reduction_by_id,
+    get_reductions_by_experiment_number,
+    get_reductions_by_instrument,
 )
 
 

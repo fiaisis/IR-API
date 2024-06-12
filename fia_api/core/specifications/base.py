@@ -11,16 +11,16 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from functools import wraps
-from typing import TypeVar, Generic, Type, Literal, Tuple, Callable, Any
+from typing import Any, Callable, Generic, Literal, TypeVar
 
-from sqlalchemy import select, Select
+from sqlalchemy import Select, select
 
 from fia_api.core.model import Base
 
 T = TypeVar("T", bound=Base)
 
 
-def apply_pagination(spec_value: Select[Tuple[T]], limit: int, offset: int) -> Select[Tuple[T]]:
+def apply_pagination(spec_value: Select[tuple[T]], limit: int, offset: int) -> Select[tuple[Any]]:
     """
     Given a Select of T, apply given limits and offsets
     :param spec_value: The Select
@@ -36,11 +36,11 @@ def apply_pagination(spec_value: Select[Tuple[T]], limit: int, offset: int) -> S
 
 
 def apply_ordering(
-    spec_value: Select[Tuple[T]],
-    model: Type[T],
+    spec_value: Select[tuple[T]],
+    model: type[T],
     order_by: str,
     order_direction: str,
-) -> Select[Tuple[T]]:
+) -> Select[tuple[T]]:
     """
     Apply basic ordering to the specification value.
     Note: This can only be called when there are no joins. Orders based on relations should be implemented in the
@@ -52,12 +52,11 @@ def apply_ordering(
     :return:
     """
     column_element = getattr(model, order_by)
-    spec_value = (
+    return (
         spec_value.order_by(column_element.asc())
         if order_direction == "asc"
         else spec_value.order_by(column_element.desc())
     )
-    return spec_value
 
 
 def paginate(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -70,7 +69,7 @@ def paginate(func: Callable[..., Any]) -> Callable[..., Any]:
     """
 
     @wraps(func)
-    def wrapper(self: Specification[T], *args: Tuple[Any], **kwargs: int) -> Any:
+    def wrapper(self: Specification[T], *args: tuple[Any], **kwargs: int) -> Any:
         limit = kwargs.get("limit", 0)
         offset = kwargs.get("offset", 0)
         self.value = apply_pagination(self.value, limit, offset)
@@ -88,11 +87,11 @@ class Specification(Generic[T], ABC):
     """
 
     def __init__(self) -> None:
-        self.value: Select[Tuple[T]] = select(self.model)
+        self.value: Select[tuple[T]] = select(self.model)
 
     @property
     @abstractmethod
-    def model(self) -> Type[T]:
+    def model(self) -> type[T]:
         """
         An abstract property that should be overridden to return the SQLAlchemy model class
         that the specification is targeting.

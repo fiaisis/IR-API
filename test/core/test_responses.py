@@ -5,16 +5,21 @@ Test cases for response objects
 import datetime
 from unittest import mock
 
-from fia_api.core.model import Run, Instrument, Reduction, ReductionState, Script
-from fia_api.core.responses import RunResponse, ReductionResponse, ReductionWithRunsResponse, ScriptResponse
+from fia_api.core.model import Instrument, Reduction, ReductionState, Run, Script
+from fia_api.core.responses import (
+    ReductionResponse,
+    ReductionWithRunsResponse,
+    RunResponse,
+    ScriptResponse,
+)
 
 RUN = Run(
     filename="filename",
     experiment_number=123456,
     title="title",
     users="user 1, user 2",
-    run_start=datetime.datetime(2000, 1, 1, 1, 1, 1),
-    run_end=datetime.datetime(2000, 1, 1, 1, 2, 1),
+    run_start=datetime.datetime(2000, 1, 1, 1, 1, 1, tzinfo=datetime.timezone.utc),
+    run_end=datetime.datetime(2000, 1, 1, 1, 2, 1, tzinfo=datetime.timezone.utc),
     good_frames=1,
     raw_frames=2,
     instrument=Instrument(instrument_name="instrument name"),
@@ -24,8 +29,8 @@ SCRIPT = Script(script="print('foo')")
 
 REDUCTION = Reduction(
     id=1,
-    reduction_start=datetime.datetime(2000, 1, 1, 1, 1, 1),
-    reduction_end=datetime.datetime(2000, 1, 1, 1, 5, 1),
+    reduction_start=datetime.datetime(2000, 1, 1, 1, 1, 1, tzinfo=datetime.timezone.utc),
+    reduction_end=datetime.datetime(2000, 1, 1, 1, 5, 1, tzinfo=datetime.timezone.utc),
     reduction_state=ReductionState.SUCCESSFUL,
     reduction_inputs={"ei": "auto"},
     reduction_outputs="some output",
@@ -52,7 +57,10 @@ def test_run_response_from_run():
     assert response.instrument_name == RUN.instrument.instrument_name
 
 
-@mock.patch("fia_api.core.responses.ScriptResponse.from_script", return_value=ScriptResponse(value="print('foo')"))
+@mock.patch(
+    "fia_api.core.responses.ScriptResponse.from_script",
+    return_value=ScriptResponse(value="print('foo')"),
+)
 def test_reduction_response_from_reduction(from_script):
     """
     Test that reduction response can be built from reduction
@@ -72,7 +80,10 @@ def test_reduction_response_from_reduction(from_script):
     assert response.stacktrace == REDUCTION.stacktrace
 
 
-@mock.patch("fia_api.core.responses.ScriptResponse.from_script", return_value=ScriptResponse(value="print('foo')"))
+@mock.patch(
+    "fia_api.core.responses.ScriptResponse.from_script",
+    return_value=ScriptResponse(value="print('foo')"),
+)
 def test_reduction_with_runs_response_from_reduction(from_script):
     """
     Test reduction response can be built to include runs

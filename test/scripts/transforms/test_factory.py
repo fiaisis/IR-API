@@ -13,8 +13,13 @@ from fia_api.scripts.transforms.transform import MissingTransformError
 
 
 @pytest.mark.parametrize(
-    "name,expected_transform",
-    [("mari", MariTransform), ("tosca", ToscaTransform), ("test", TestTransform), ("osiris", OsirisTransform)],
+    "name,expected_transform",  # noqa: PT006
+    [
+        ("mari", MariTransform),
+        ("tosca", ToscaTransform),
+        ("test", TestTransform),
+        ("osiris", OsirisTransform),
+    ],
 )
 def test_transform_factory(name, expected_transform):
     """Parametrised factory tests"""

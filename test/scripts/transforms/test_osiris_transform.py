@@ -95,10 +95,16 @@ for workspace in output_workspaces:
 
 
 def create_expected_script(
-    input_runs, calibration_file_path, cycle, reflection, spectroscopy_reduction, diffraction_reduction
+    input_runs,
+    calibration_file_path,
+    cycle,
+    reflection,
+    spectroscopy_reduction,
+    diffraction_reduction,
 ) -> str:
     """Generate an expected script for assertion"""
-    return f"""# import mantid algorithms, numpy and matplotlib
+    return (
+        f"""# import mantid algorithms, numpy and matplotlib
 from mantid.simpleapi import *
 import matplotlib.pyplot as plt
 import numpy as np
@@ -183,7 +189,7 @@ if diffraction_reduction:
 for workspace in output_workspaces:
     save_file_name = f"{{output_ws.name()}}.nxs"
     save_path = f"/output/"
-    SaveNexusProcessed(workspace, f"{{save_path}}{{save_file_name}}")"""
+    SaveNexusProcessed(workspace, f"{{save_path}}{{save_file_name}}")""")
 
 
 def test_osiris_transform_spectroscopy():

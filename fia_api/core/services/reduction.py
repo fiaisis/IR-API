@@ -2,7 +2,7 @@
 Service Layer for reductions
 """
 
-from typing import Sequence, Literal
+from typing import Literal, Sequence
 
 from fia_api.core.exceptions import MissingRecordError
 from fia_api.core.model import Reduction
@@ -44,7 +44,11 @@ def get_reductions_by_instrument(
     """
     return _REPO.find(
         ReductionSpecification().by_instrument(
-            instrument=instrument, limit=limit, offset=offset, order_by=order_by, order_direction=order_direction
+            instrument=instrument,
+            limit=limit,
+            offset=offset,
+            order_by=order_by,
+            order_direction=order_direction,
         )
     )
 

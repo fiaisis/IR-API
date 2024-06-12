@@ -2,7 +2,7 @@
 Service Layer for runs
 """
 
-from typing import Sequence, Literal
+from typing import Literal, Sequence
 
 from fia_api.core.model import Run
 from fia_api.core.repositories import Repo
@@ -33,7 +33,13 @@ def get_runs_by_instrument(
     limit: int = 0,
     offset: int = 0,
     order_by: Literal[
-        "experiment_number", "run_end", "run_start", "good_frames", "raw_frames", "id", "filename"
+        "experiment_number",
+        "run_end",
+        "run_start",
+        "good_frames",
+        "raw_frames",
+        "id",
+        "filename",
     ] = "run_start",
     order_direction: Literal["asc", "desc"] = "desc",
 ) -> Sequence[Run]:
@@ -48,6 +54,10 @@ def get_runs_by_instrument(
     """
     return _REPO.find(
         RunSpecification().by_instrument(
-            instrument, limit=limit, offset=offset, order_by=order_by, order_direction=order_direction
+            instrument,
+            limit=limit,
+            offset=offset,
+            order_by=order_by,
+            order_direction=order_direction,
         )
     )

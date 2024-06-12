@@ -3,7 +3,7 @@ Tests for script acquisition
 """
 
 import os
-from unittest.mock import Mock, patch, mock_open, MagicMock
+from unittest.mock import MagicMock, Mock, mock_open, patch
 
 import pytest
 
@@ -13,12 +13,12 @@ from fia_api.core.exceptions import (
     UnsafePathError,
 )
 from fia_api.scripts.acquisition import (
+    _get_latest_commit_sha,
     _get_script_from_remote,
     _get_script_locally,
-    write_script_locally,
     get_by_instrument_name,
     get_script_for_reduction,
-    _get_latest_commit_sha,
+    write_script_locally,
 )
 from fia_api.scripts.pre_script import PreScript
 
@@ -26,7 +26,7 @@ from fia_api.scripts.pre_script import PreScript
 INSTRUMENT = "instrument_1"
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_response():
     """
     Response pytest fixture
@@ -47,7 +47,7 @@ def test_sha_env_set_when_sha_present(mock_sha, mock_get, mock_response):
 
     _get_script_from_remote(INSTRUMENT)
 
-    assert os.environ["sha"] == "valid_sha"
+    assert os.environ["sha"] == "valid_sha"  # noqa: SIM112
 
 
 @patch("requests.get")
@@ -111,7 +111,8 @@ def test__get_script_from_remote_connection_error(mock_get, caplog):
 
     with pytest.raises(ConnectionError):
         _get_script_from_remote(INSTRUMENT)
-        assert "Could not get instrument_1 script from remote" in caplog.text
+
+    assert "Could not get instrument_1 script from remote" in caplog.text
 
 
 @patch("builtins.open", new_callable=mock_open, read_data="test script content")
@@ -127,14 +128,13 @@ def test__get_script_locally(mock_file):
     mock_file.assert_called_once_with("fia_api/local_scripts/instrument_1.py", "r", encoding="utf-8")
 
 
-@patch("builtins.open", side_effect=FileNotFoundError)
-def test__get_script_locally_not_found(_):
+def test__get_script_locally_not_found():
     """
     Test RunTimeError is raised when script not obtainable locally
     :param _: Discarded mock
     :return: None
     """
-    with pytest.raises(MissingScriptError):
+    with pytest.raises(MissingScriptError), patch("builtins.open", side_effect=FileNotFoundError):
         _get_script_locally(INSTRUMENT)
 
 
@@ -219,8 +219,7 @@ def test_get_script_for_reduction_with_valid_reduction_id(mock_get_by_name, mock
 
 
 @patch("fia_api.scripts.acquisition.Repo")
-@patch("fia_api.scripts.acquisition.get_by_instrument_name", return_value="some instrument")
-def test_get_script_for_reduction_with_invalid_reduction_id(_, mock_repo):
+def test_get_script_for_reduction_with_invalid_reduction_id(mock_repo):
     """
     Test exception raised when reduction id is given but no reduction exists
     :param _: Mock
@@ -231,7 +230,10 @@ def test_get_script_for_reduction_with_invalid_reduction_id(_, mock_repo):
     instrument = "some_instrument"
     reduction_id = -1
 
-    with pytest.raises(MissingRecordError) as excinfo:
+    with (
+        pytest.raises(MissingRecordError) as excinfo,
+        patch("fia_api.scripts.acquisition.get_by_instrument_name", return_value="some instrument"),
+    ):
         get_script_for_reduction(instrument, reduction_id)
 
     assert f"No reduction found with id: {reduction_id}" in str(excinfo.value)

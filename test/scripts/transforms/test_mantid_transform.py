@@ -24,7 +24,7 @@ def test_mantid_transform():
     """Test the mantid transform"""
     reduction = Mock()
     reduction.id = 1
-    os.environ["GITHUB_API_TOKEN"] = "special token"
+    os.environ["GITHUB_API_TOKEN"] = "special token"  # noqa: S105
     script = PreScript(value=ORIGINAL_SCRIPT)
     MantidTransform().apply(script, reduction)
     assert script.value == EXPECTED_OUTPUT

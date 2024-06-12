@@ -3,12 +3,13 @@ Testing utils
 """
 
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from typing import ClassVar
 
 from faker import Faker
 from faker.providers import BaseProvider
 
-from fia_api.core.model import Instrument, Run, Reduction, ReductionState, Script, Base
+from fia_api.core.model import Base, Instrument, Reduction, ReductionState, Run, Script
 from fia_api.core.repositories import ENGINE, SESSION
 
 random.seed(1)
@@ -21,7 +22,7 @@ class FIAProvider(BaseProvider):
     Custom fia faker provider
     """
 
-    INSTRUMENTS = [
+    INSTRUMENTS: ClassVar[list[str]] = [
         "ALF",
         "ARGUS",
         "CHIPIR",
@@ -74,6 +75,7 @@ class FIAProvider(BaseProvider):
             faker.pyint(min_value=0, max_value=23),
             faker.pyint(min_value=0, max_value=59),
             faker.pyint(min_value=0, max_value=59),
+            tzinfo=timezone.utc
         )
 
     def instrument(self) -> Instrument:
@@ -82,7 +84,7 @@ class FIAProvider(BaseProvider):
         :return:
         """
         instrument = Instrument()
-        instrument.instrument_name = random.choice(self.INSTRUMENTS)
+        instrument.instrument_name = random.choice(self.INSTRUMENTS)  # noqa: S311
         return instrument
 
     def run(self, instrument: Instrument) -> Run:
@@ -127,7 +129,8 @@ class FIAProvider(BaseProvider):
             reduction.reduction_status_message = faker.sentence(nb_words=10)
             reduction.reduction_outputs = "What should this be?"
         reduction.reduction_inputs = faker.pydict(
-            nb_elements=faker.pyint(min_value=1, max_value=10), value_types=[str, int, bool, float]
+            nb_elements=faker.pyint(min_value=1, max_value=10),
+            value_types=[str, int, bool, float],
         )
         reduction.reduction_state = reduction_state
         return reduction
@@ -198,7 +201,7 @@ def setup_database() -> None:
             instrument_.instrument_name = instrument
             instruments.append(instrument_)
         for _ in range(5000):
-            session.add(FIA_FAKER_PROVIDER.insertable_reduction(random.choice(instruments)))
+            session.add(FIA_FAKER_PROVIDER.insertable_reduction(random.choice(instruments)))  # noqa: S311
         session.add(TEST_REDUCTION)
         session.commit()
         session.refresh(TEST_REDUCTION)

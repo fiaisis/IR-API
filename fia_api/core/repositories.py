@@ -4,10 +4,10 @@ Provides a generic repository class for performing database operations.
 
 import logging
 import os
-from typing import Generic, TypeVar, Sequence, Optional
+from typing import Generic, Optional, Sequence, TypeVar
 
-from sqlalchemy import select, func, create_engine, NullPool
-from sqlalchemy.exc import NoResultFound, MultipleResultsFound
+from sqlalchemy import NullPool, create_engine, func, select
+from sqlalchemy.exc import MultipleResultsFound, NoResultFound
 from sqlalchemy.orm import sessionmaker
 
 from fia_api.core.exceptions import NonUniqueRecordError
