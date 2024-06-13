@@ -4,16 +4,14 @@ scripts.
 """
 
 import logging
-from typing import TYPE_CHECKING, List
+from typing import List
 
 from sqlalchemy import ColumnElement
+from sqlalchemy.dialects.postgresql import JSONB
 
 from fia_api.core.model import Reduction
 from fia_api.scripts.pre_script import PreScript
 from fia_api.scripts.transforms.transform import Transform
-
-if TYPE_CHECKING:
-    from sqlalchemy.dialects.postgresql import JSONB
 
 logger = logging.getLogger(__name__)
 

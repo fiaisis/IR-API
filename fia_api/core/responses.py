@@ -4,15 +4,13 @@ responses module contains api response definitions
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel
 
 from fia_api.core.model import Reduction, ReductionState, Run, Script
 from fia_api.core.utility import filter_script_for_tokens
-
-if TYPE_CHECKING:
-    from datetime import datetime
 
 
 class CountResponse(BaseModel):
