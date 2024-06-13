@@ -66,8 +66,7 @@ def test_get_reduction_by_id_reduction_exists():
             }
         ],
         "script": None,
-        "stacktrace": None
-
+        "stacktrace": None,
     }
 
 
@@ -154,7 +153,7 @@ def test_get_reductions_for_experiment_number():
             "reduction_state": "NOT_STARTED",
             "reduction_status_message": None,
             "script": None,
-            "stacktrace": None
+            "stacktrace": None,
         }
     ]
 
@@ -197,7 +196,7 @@ def test_get_reductions_for_instrument_reductions_exist():
             "reduction_state": "NOT_STARTED",
             "reduction_status_message": None,
             "script": None,
-            "stacktrace": None
+            "stacktrace": None,
         }
     ]
 
@@ -239,7 +238,7 @@ def test_get_reductions_for_instrument_runs_included():
                 }
             ],
             "script": None,
-            "stacktrace": None
+            "stacktrace": None,
         }
     ]
 
