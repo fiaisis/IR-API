@@ -6,7 +6,7 @@ information about instruments, runs, scripts, and reductions.
 from __future__ import annotations
 
 import enum
-from datetime import datetime  # noqa: TCH003 need to keep this for sqlalchemy inference
+from datetime import datetime  # need to keep this for sqlalchemy inference
 
 from sqlalchemy import (
     Column,

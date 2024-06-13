@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import Literal
 
 from fastapi import APIRouter
-from starlette.background import BackgroundTasks  # noqa: TCH002 Fastapi docs require this
+from starlette.background import BackgroundTasks  # Fastapi docs require this
 
 from fia_api.core.responses import (
     CountResponse,
