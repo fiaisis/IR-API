@@ -21,7 +21,7 @@ from fia_api.core.model import Base
 T = TypeVar("T", bound=Base)
 
 
-def apply_pagination(spec_value: Select[tuple[T]], limit: int, offset: int) -> Select[tuple[Any]]:
+def apply_pagination(spec_value: Select[tuple[T]], limit: int, offset: int) -> Select[tuple[T]]:
     """
     Given a Select of T, apply given limits and offsets
     :param spec_value: The Select
