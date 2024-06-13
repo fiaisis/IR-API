@@ -17,7 +17,7 @@ from fia_api.core.specifications.run import RunSpecification
 
 # pylint: disable = redefined-outer-name
 
-TEST_SCRIPT = Script(script="print('Script 1')")
+TEST_SCRIPT = Script(script="print('Script 1')", sha="some_sha", script_hash="some_hash")
 TEST_REDUCTION = Reduction(
     reduction_start=datetime.datetime.now(datetime.UTC),
     reduction_state=ReductionState.NOT_STARTED,

@@ -66,6 +66,8 @@ def test_get_reduction_by_id_reduction_exists():
             }
         ],
         "script": None,
+        "stacktrace": None
+
     }
 
 
@@ -76,16 +78,17 @@ def test_get_prescript_when_reduction_does_not_exist():
     :return:
     """
     response = client.get("/instrument/mari/script?reduction_id=4324234")
-    assert response.status_code == HTTPStatus.OK
+    assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json() == {"message": "Resource not found"}
 
 
-@patch("fia_api.scripts.acquisition._get_script_from_remote", side_effect=RuntimeError)
-def test_unsafe_path_request_returns_400_status():
+@patch("fia_api.scripts.acquisition._get_script_from_remote")
+def test_unsafe_path_request_returns_400_status(mock_get_from_remote):
     """
     Test that a 400 is returned for unsafe characters in script request
     :return:
     """
+    mock_get_from_remote.side_effect = RuntimeError
     response = client.get("/instrument/mari./script")  # %2F is encoded /
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() == {"message": "The given request contains bad characters"}
@@ -151,6 +154,7 @@ def test_get_reductions_for_experiment_number():
             "reduction_state": "NOT_STARTED",
             "reduction_status_message": None,
             "script": None,
+            "stacktrace": None
         }
     ]
 
@@ -193,6 +197,7 @@ def test_get_reductions_for_instrument_reductions_exist():
             "reduction_state": "NOT_STARTED",
             "reduction_status_message": None,
             "script": None,
+            "stacktrace": None
         }
     ]
 
@@ -234,6 +239,7 @@ def test_get_reductions_for_instrument_runs_included():
                 }
             ],
             "script": None,
+            "stacktrace": None
         }
     ]
 

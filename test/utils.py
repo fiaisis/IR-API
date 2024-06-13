@@ -133,6 +133,7 @@ class FIAProvider(BaseProvider):
             value_types=[str, int, bool, float],
         )
         reduction.reduction_state = reduction_state
+        reduction.stacktrace = "some stacktrace"
         return reduction
 
     def script(self) -> Script:
@@ -142,6 +143,7 @@ class FIAProvider(BaseProvider):
         """
         script = Script()
         script.sha = faker.unique.sha1()
+        script.script_hash = "some_hash"
         script.script = "import os\nprint('foo')\n"
         return script
 
