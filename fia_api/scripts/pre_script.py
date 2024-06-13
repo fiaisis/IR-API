@@ -2,7 +2,6 @@
 PreScript contains the PreScript definition. As it is not strictly a model, it does not belong in models.py
 """
 
-
 from fia_api.core.responses import PreScriptResponse
 
 
