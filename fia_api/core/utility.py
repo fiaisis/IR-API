@@ -1,7 +1,8 @@
 """Collection of utility functions"""
 
 import functools
-from typing import Any, Callable, TypeVar, cast
+from collections.abc import Callable
+from typing import Any, TypeVar, cast
 
 from fia_api.core.exceptions import UnsafePathError
 

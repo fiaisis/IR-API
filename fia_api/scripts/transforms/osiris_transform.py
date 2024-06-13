@@ -4,7 +4,7 @@ scripts.
 """
 
 import logging
-from typing import Iterable
+from collections.abc import Iterable
 
 from fia_api.core.model import Reduction
 from fia_api.scripts.pre_script import PreScript

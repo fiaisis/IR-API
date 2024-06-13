@@ -4,7 +4,6 @@ scripts.
 """
 
 import logging
-from typing import List
 
 from sqlalchemy import ColumnElement
 from sqlalchemy.dialects.postgresql import JSONB
@@ -59,7 +58,7 @@ class MariTransform(Transform):
     @staticmethod
     def _replace_input(
         line: str,
-        lines: List[str],
+        lines: list[str],
         index: int,
         line_start: str,
         replacement: ColumnElement["JSONB"],

@@ -2,7 +2,8 @@
 Service Layer for reductions
 """
 
-from typing import Literal, Sequence
+from collections.abc import Sequence
+from typing import Literal
 
 from fia_api.core.exceptions import MissingRecordError
 from fia_api.core.model import Reduction

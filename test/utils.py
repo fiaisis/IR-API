@@ -3,7 +3,7 @@ Testing utils
 """
 
 import random
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import ClassVar
 
 from faker import Faker
@@ -75,7 +75,7 @@ class FIAProvider(BaseProvider):
             faker.pyint(min_value=0, max_value=23),
             faker.pyint(min_value=0, max_value=59),
             faker.pyint(min_value=0, max_value=59),
-            tzinfo=timezone.utc,
+            tzinfo=UTC,
         )
 
     def instrument(self) -> Instrument:

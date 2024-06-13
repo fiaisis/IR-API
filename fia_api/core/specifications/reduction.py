@@ -10,14 +10,14 @@ and ordering preferences.
 # the paginate decorator
 from __future__ import annotations
 
-from typing import Literal, Union
+from typing import Literal
 
 from fia_api.core.model import Instrument, Reduction, Run, run_reduction_junction_table
 from fia_api.core.specifications.base import Specification, apply_ordering, paginate
 
 ReductionOrderField = Literal["reduction_start", "reduction_end", "reduction_state", "id", "reduction_outputs"]
 RunOrderField = Literal["run_start", "run_end", "experiment_number", "experiment_title", "filename"]
-JointRunReductionOrderField = Union[RunOrderField, ReductionOrderField]
+JointRunReductionOrderField = RunOrderField | ReductionOrderField
 
 
 class ReductionSpecification(Specification[Reduction]):

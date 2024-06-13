@@ -4,7 +4,8 @@ Provides a generic repository class for performing database operations.
 
 import logging
 import os
-from typing import Generic, Optional, Sequence, TypeVar
+from collections.abc import Sequence
+from typing import Generic, TypeVar
 
 from sqlalchemy import NullPool, create_engine, func, select
 from sqlalchemy.exc import MultipleResultsFound, NoResultFound
@@ -53,7 +54,7 @@ class Repo(Generic[T]):
             query = spec.value
             return session.execute(query).scalars().all()
 
-    def find_one(self, spec: Specification[T]) -> Optional[T]:
+    def find_one(self, spec: Specification[T]) -> T | None:
         """
         Finds a single entity matching the given specification.
 

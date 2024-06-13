@@ -10,8 +10,9 @@ the concerns of how objects are retrieved from the database from the rest of the
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Callable, Generic, Literal, TypeVar
+from typing import Any, Generic, Literal, TypeVar
 
 from sqlalchemy import Select, select
 

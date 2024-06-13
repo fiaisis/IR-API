@@ -18,8 +18,8 @@ RUN = Run(
     experiment_number=123456,
     title="title",
     users="user 1, user 2",
-    run_start=datetime.datetime(2000, 1, 1, 1, 1, 1, tzinfo=datetime.timezone.utc),
-    run_end=datetime.datetime(2000, 1, 1, 1, 2, 1, tzinfo=datetime.timezone.utc),
+    run_start=datetime.datetime(2000, 1, 1, 1, 1, 1, tzinfo=datetime.UTC),
+    run_end=datetime.datetime(2000, 1, 1, 1, 2, 1, tzinfo=datetime.UTC),
     good_frames=1,
     raw_frames=2,
     instrument=Instrument(instrument_name="instrument name"),
@@ -29,8 +29,8 @@ SCRIPT = Script(script="print('foo')")
 
 REDUCTION = Reduction(
     id=1,
-    reduction_start=datetime.datetime(2000, 1, 1, 1, 1, 1, tzinfo=datetime.timezone.utc),
-    reduction_end=datetime.datetime(2000, 1, 1, 1, 5, 1, tzinfo=datetime.timezone.utc),
+    reduction_start=datetime.datetime(2000, 1, 1, 1, 1, 1, tzinfo=datetime.UTC),
+    reduction_end=datetime.datetime(2000, 1, 1, 1, 5, 1, tzinfo=datetime.UTC),
     reduction_state=ReductionState.SUCCESSFUL,
     reduction_inputs={"ei": "auto"},
     reduction_outputs="some output",

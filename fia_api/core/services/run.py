@@ -2,7 +2,8 @@
 Service Layer for runs
 """
 
-from typing import Literal, Sequence
+from collections.abc import Sequence
+from typing import Literal
 
 from fia_api.core.model import Run
 from fia_api.core.repositories import Repo

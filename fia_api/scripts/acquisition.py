@@ -6,7 +6,6 @@ import logging
 import os
 from http import HTTPStatus
 from pathlib import Path
-from typing import Optional
 
 import requests
 
@@ -24,7 +23,7 @@ logger = logging.getLogger(__name__)
 LOCAL_SCRIPT_DIR = "fia_api/local_scripts"
 
 
-def _get_latest_commit_sha() -> Optional[str]:
+def _get_latest_commit_sha() -> str | None:
     """
     Get the latest commit sha of the autoreduction-script repository
     :return: (str) - the commit sha
@@ -81,7 +80,7 @@ def _get_script_locally(instrument: str) -> PreScript:
     try:
         logger.info("Attempting to get %s script locally...", instrument)
         path = Path(f"{LOCAL_SCRIPT_DIR}/{instrument}.py")
-        with path.open(encoding="utf-8") as fle:
+        with path.open(encoding="utf-8", mode="r") as fle:
             return PreScript(value="".join(line for line in fle), sha=os.environ.get("sha", None))  # noqa: SIM112
     except FileNotFoundError as exc:
         logger.exception("Could not retrieve %s script locally", instrument)
@@ -101,7 +100,7 @@ def write_script_locally(script: PreScript, instrument: str) -> None:
     if script.is_latest:
         logger.info("Updating local %s script", instrument)
         path = Path(f"{LOCAL_SCRIPT_DIR}/{instrument}.py")
-        with path.open("w+", encoding="utf-8") as fle:
+        with path.open(mode="w+", encoding="utf-8") as fle:
             fle.writelines(script.original_value)
 
 
@@ -118,7 +117,7 @@ def get_by_instrument_name(instrument: str) -> PreScript:
         return _get_script_locally(instrument)
 
 
-def get_script_for_reduction(instrument: str, reduction_id: Optional[int] = None) -> PreScript:
+def get_script_for_reduction(instrument: str, reduction_id: int | None = None) -> PreScript:
     """
     Get the script object for the given instrument, and optional reduction id
     :param instrument: str -  The instrument
@@ -154,7 +153,7 @@ def _transform_script(instrument: str, reduction_id: int, script: PreScript) -> 
     mantid_transform.apply(script, reduction)
 
 
-def get_script_by_sha(instrument: str, sha: str, reduction_id: Optional[int] = None) -> PreScript:
+def get_script_by_sha(instrument: str, sha: str, reduction_id: int | None = None) -> PreScript:
     """
     Given an instrument and commit sha, return the script for that instrument at that point in history. If a reduction
     id is provided, the transformed version of the script will be returned.
