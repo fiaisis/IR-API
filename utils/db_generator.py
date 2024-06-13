@@ -7,7 +7,7 @@ import random
 import sys
 
 from faker import Faker
-from sqlalchemy import create_engine, NullPool
+from sqlalchemy import NullPool, create_engine
 from sqlalchemy.orm import sessionmaker
 
 from fia_api.core.model import Base, Instrument
@@ -47,8 +47,8 @@ def main():
             instrument_.instrument_name = instrument
             instruments.append(instrument_)
 
-        for i in range(10000):
-            session.add(fia_provider.insertable_reduction(random.choice(instruments)))
+        for _ in range(10000):
+            session.add(fia_provider.insertable_reduction(random.choice(instruments)))  # noqa: S311
         session.commit()
 
 

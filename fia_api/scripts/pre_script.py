@@ -2,8 +2,6 @@
 PreScript contains the PreScript definition. As it is not strictly a model, it does not belong in models.py
 """
 
-from typing import Optional
-
 from fia_api.core.responses import PreScriptResponse
 
 
@@ -13,11 +11,11 @@ class PreScript:
     database.
     """
 
-    def __init__(self, value: str, is_latest: bool = False, sha: Optional[str] = None):
+    def __init__(self, value: str, is_latest: bool = False, sha: str | None = None):
         self.value = value
         self._original_value = value
         self.is_latest = is_latest
-        self.sha: Optional[str] = sha
+        self.sha: str | None = sha
 
     @property
     def original_value(self) -> str:

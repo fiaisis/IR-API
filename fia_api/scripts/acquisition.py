@@ -4,7 +4,8 @@ Acquisition module contains all the functionality for obtaining the script local
 
 import logging
 import os
-from typing import Optional
+from http import HTTPStatus
+from pathlib import Path
 
 import requests
 
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
 LOCAL_SCRIPT_DIR = "fia_api/local_scripts"
 
 
-def _get_latest_commit_sha() -> Optional[str]:
+def _get_latest_commit_sha() -> str | None:
     """
     Get the latest commit sha of the autoreduction-script repository
     :return: (str) - the commit sha
@@ -55,13 +56,13 @@ def _get_script_from_remote(instrument: str) -> PreScript:
             f"https://raw.githubusercontent.com/fiaisis/autoreduction-scripts/main/" f"{instrument.upper()}/reduce.py",
             timeout=30,
         )
-        if request.status_code != 200:
+        if request.status_code != HTTPStatus.OK:
             logger.warning("Could not get %s script from remote", instrument)
             raise RuntimeError(f"Could not get {instrument} script from remote")
         logger.info("Obtained %s script", instrument)
         sha = _get_latest_commit_sha()
         if sha is not None:
-            os.environ["sha"] = sha
+            os.environ["sha"] = sha  # noqa: SIM112
         return PreScript(request.text, is_latest=True, sha=sha)
 
     except ConnectionError:
@@ -78,8 +79,9 @@ def _get_script_locally(instrument: str) -> PreScript:
     """
     try:
         logger.info("Attempting to get %s script locally...", instrument)
-        with open(f"{LOCAL_SCRIPT_DIR}/{instrument}.py", "r", encoding="utf-8") as fle:
-            return PreScript(value="".join(line for line in fle), sha=os.environ.get("sha", None))
+        path = Path(f"{LOCAL_SCRIPT_DIR}/{instrument}.py")
+        with path.open(encoding="utf-8", mode="r") as fle:
+            return PreScript(value="".join(line for line in fle), sha=os.environ.get("sha", None))  # noqa: SIM112
     except FileNotFoundError as exc:
         logger.exception("Could not retrieve %s script locally", instrument)
         raise MissingScriptError(f"Unable to load any script for instrument: {instrument}") from exc
@@ -97,7 +99,8 @@ def write_script_locally(script: PreScript, instrument: str) -> None:
         raise RuntimeError(f"Failed to acquire script for instrument {instrument} from remote and locally")
     if script.is_latest:
         logger.info("Updating local %s script", instrument)
-        with open(f"{LOCAL_SCRIPT_DIR}/{instrument}.py", "w+", encoding="utf-8") as fle:
+        path = Path(f"{LOCAL_SCRIPT_DIR}/{instrument}.py")
+        with path.open(mode="w+", encoding="utf-8") as fle:
             fle.writelines(script.original_value)
 
 
@@ -114,7 +117,7 @@ def get_by_instrument_name(instrument: str) -> PreScript:
         return _get_script_locally(instrument)
 
 
-def get_script_for_reduction(instrument: str, reduction_id: Optional[int] = None) -> PreScript:
+def get_script_for_reduction(instrument: str, reduction_id: int | None = None) -> PreScript:
     """
     Get the script object for the given instrument, and optional reduction id
     :param instrument: str -  The instrument
@@ -150,7 +153,7 @@ def _transform_script(instrument: str, reduction_id: int, script: PreScript) -> 
     mantid_transform.apply(script, reduction)
 
 
-def get_script_by_sha(instrument: str, sha: str, reduction_id: Optional[int] = None) -> PreScript:
+def get_script_by_sha(instrument: str, sha: str, reduction_id: int | None = None) -> PreScript:
     """
     Given an instrument and commit sha, return the script for that instrument at that point in history. If a reduction
     id is provided, the transformed version of the script will be returned.
@@ -164,14 +167,15 @@ def get_script_by_sha(instrument: str, sha: str, reduction_id: Optional[int] = N
             f"https://raw.githubusercontent.com/fiaisis/autoreduction-scripts/{sha}/" f"{instrument.upper()}/reduce.py",
             timeout=30,
         )
-        if response.status_code == 404:
+        if response.status_code == HTTPStatus.NOT_FOUND:
             raise MissingRecordError(f"No script for instrument {instrument} or non existent sha: {sha}")
-        if response.status_code != 200:
+        if response.status_code != HTTPStatus.OK:
             raise RuntimeError("Cannot get script from GitHub")
         script = PreScript(value=response.text, sha=sha)
         if reduction_id:
-            # TODO: When the frontend related PR is merged, add a function to the reduction or script service to find
-            #  script from reduction and has, to prevent retransforming unnecessarily
+            # TODO(keiranjprice101): When the frontend related PR is merged, # noqa: FIX002, TD003
+            #  add a function to the reduction or script service to find script from reduction
+            #  and has, to prevent re-transforming unnecessarily
             _transform_script(instrument, reduction_id, script)
         return script
     except ConnectionError as exc:

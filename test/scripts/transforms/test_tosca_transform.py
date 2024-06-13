@@ -129,4 +129,4 @@ def test_tosca_transform() -> None:
     transform = ToscaTransform()
     script = PreScript(value=SCRIPT)
     transform.apply(script, reduction)
-    assert EXPECTED_SCRIPT == script.value
+    assert script.value == EXPECTED_SCRIPT

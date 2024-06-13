@@ -6,12 +6,20 @@ information about instruments, runs, scripts, and reductions.
 from __future__ import annotations
 
 import enum
-from datetime import datetime
-from typing import Optional, List
+from datetime import datetime  # need to keep this for sqlalchemy inference
 
-from sqlalchemy import Table, Column, ForeignKey, String, DateTime, Enum, Integer, inspect
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Integer,
+    String,
+    Table,
+    inspect,
+)
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class ReductionState(enum.Enum):
@@ -63,7 +71,7 @@ class Script(Base):
 
     __tablename__ = "scripts"
     script: Mapped[str] = mapped_column(String())
-    sha: Mapped[Optional[str]] = mapped_column(String())
+    sha: Mapped[str | None] = mapped_column(String())
     script_hash: Mapped[str] = mapped_column(String())
 
     def __repr__(self) -> str:
@@ -76,17 +84,19 @@ class Reduction(Base):
     """
 
     __tablename__ = "reductions"
-    reduction_start: Mapped[Optional[datetime]] = mapped_column(DateTime())
-    reduction_end: Mapped[Optional[datetime]] = mapped_column(DateTime())
+    reduction_start: Mapped[datetime | None] = mapped_column(DateTime())
+    reduction_end: Mapped[datetime | None] = mapped_column(DateTime())
     reduction_state: Mapped[ReductionState] = mapped_column(Enum(ReductionState))
-    reduction_status_message: Mapped[Optional[str]] = mapped_column(String())
+    reduction_status_message: Mapped[str | None] = mapped_column(String())
     reduction_inputs: Mapped[JSONB] = mapped_column(JSONB)
-    reduction_outputs: Mapped[Optional[str]] = mapped_column(String())
-    stacktrace: Mapped[Optional[str]] = mapped_column(String())
-    script_id: Mapped[Optional[int]] = mapped_column(ForeignKey("scripts.id"))
-    script: Mapped[Optional["Script"]] = relationship("Script", lazy="joined")
-    runs: Mapped[List[Run]] = relationship(
-        secondary=run_reduction_junction_table, back_populates="reductions", lazy="subquery"
+    reduction_outputs: Mapped[str | None] = mapped_column(String())
+    stacktrace: Mapped[str | None] = mapped_column(String())
+    script_id: Mapped[int | None] = mapped_column(ForeignKey("scripts.id"))
+    script: Mapped[Script | None] = relationship("Script", lazy="joined")
+    runs: Mapped[list[Run]] = relationship(
+        secondary=run_reduction_junction_table,
+        back_populates="reductions",
+        lazy="subquery",
     )
 
     def __repr__(self) -> str:
@@ -119,13 +129,13 @@ class Run(Base):
     experiment_number: Mapped[int] = mapped_column(Integer())
     title: Mapped[str] = mapped_column(String())
     users: Mapped[str] = mapped_column(String())
-    run_start: Mapped[datetime] = mapped_column(DateTime)
-    run_end: Mapped[datetime] = mapped_column(DateTime)
+    run_start: Mapped[datetime] = mapped_column(DateTime())
+    run_end: Mapped[datetime] = mapped_column(DateTime())
     good_frames: Mapped[int] = mapped_column(Integer())
     raw_frames: Mapped[int] = mapped_column(Integer())
     instrument_id: Mapped[int] = mapped_column(ForeignKey("instruments.id"))
     instrument: Mapped[Instrument] = relationship("Instrument", lazy="subquery")
-    reductions: Mapped[List[Reduction]] = relationship(
+    reductions: Mapped[list[Reduction]] = relationship(
         secondary=run_reduction_junction_table, back_populates="runs", lazy="subquery"
     )
 

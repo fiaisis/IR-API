@@ -4,6 +4,7 @@ end 2 end test cases for script acquisition
 
 # pylint: disable=line-too-long, wrong-import-order
 import re
+from http import HTTPStatus
 from unittest.mock import patch
 
 from starlette.testclient import TestClient
@@ -30,7 +31,7 @@ def test_get_default_test_prescript():
     """
     response = client.get("/instrument/test/script")
 
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     response_object = response.json()
     assert response_object["is_latest"]
     assert (
@@ -86,7 +87,7 @@ def test_get_script_by_sha_instrument_doesnt_exist_returns_404():
     :return: None
     """
     response = client.get("/instrument/foo/script/sha/64c6121")
-    assert response.status_code == 404
+    assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json() == {"message": "Resource not found"}
 
 
@@ -96,7 +97,7 @@ def test_get_script_by_sha_instrument_exists_sha_doesnt_exist_returns_404():
     :return: None
     """
     response = client.get("/instrument/test/script/sha/12345")
-    assert response.status_code == 404
+    assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json() == {"message": "Resource not found"}
 
 
@@ -106,7 +107,7 @@ def test_get_script_by_sha_instrument_and_sha_doesnt_exist_returns_404():
     :return: None
     """
     response = client.get("/instrument/foo/script/sha/12345")
-    assert response.status_code == 404
+    assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json() == {"message": "Resource not found"}
 
 
@@ -116,7 +117,7 @@ def test_get_script_by_sha_with_reduction_id():
     :return: None
     """
     response = client.get("/instrument/test/script/sha/64c6121?reduction_id=1")
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     response = response.json()
     assert response["is_latest"] is False
     assert response["sha"] == "64c6121"
@@ -147,7 +148,7 @@ def test_get_default_prescript_instrument_does_not_exist():
     :return:
     """
     response = client.get("/instrument/foo/script")
-    assert response.status_code == 404
+    assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json() == {
         "message": "The script could not be found locally or on remote, it is likely the script does not exist"
     }

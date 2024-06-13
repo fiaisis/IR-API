@@ -1,7 +1,8 @@
 """Collection of utility functions"""
 
 import functools
-from typing import Callable, Any, TypeVar, cast
+from collections.abc import Callable
+from typing import Any, TypeVar, cast
 
 from fia_api.core.exceptions import UnsafePathError
 
@@ -28,10 +29,8 @@ def filter_script_for_tokens(script: str) -> str:
     :return: The filtered script
     """
     script_list = script.splitlines()
-    filtered_script_list = []
-
-    for line in script_list:
-        if "ghp_" not in line and "network.github.api_token" not in line:
-            filtered_script_list.append(line)
+    filtered_script_list = [
+        line for line in script_list if "ghp_" not in line and "network.github.api_token" not in line
+    ]
 
     return "\n".join(filtered_script_list)

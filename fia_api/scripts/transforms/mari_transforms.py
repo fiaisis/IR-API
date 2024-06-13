@@ -4,7 +4,6 @@ scripts.
 """
 
 import logging
-from typing import List
 
 from sqlalchemy import ColumnElement
 from sqlalchemy.dialects.postgresql import JSONB
@@ -22,8 +21,7 @@ class MariTransform(Transform):
     entity.
     """
 
-    # pylint: disable = line-too-long
-    def apply(self, script: PreScript, reduction: Reduction) -> None:
+    def apply(self, script: PreScript, reduction: Reduction) -> None:  # noqa: C901
         logger.info("Beginning Mari transform for reduction %s...", reduction.id)
         lines = script.value.splitlines()
         # MyPY does not believe ColumnElement[JSONB] is indexable, despite JSONB implementing the Indexable mixin
@@ -46,15 +44,24 @@ class MariTransform(Transform):
                 continue
             if self._replace_input(line, lines, index, "sam_rmm", reduction.reduction_inputs["sam_rmm"]):  # type: ignore
                 continue
-            if self._replace_input(line, lines, index, "remove_bkg", reduction.reduction_inputs["remove_bkg"]):  # type: ignore
+            if self._replace_input(
+                line,
+                lines,
+                index,
+                "remove_bkg",
+                reduction.reduction_inputs["remove_bkg"],  # type: ignore
+            ):
                 continue
         script.value = "\n".join(lines)
         logger.info("Transform complete for reduction %s", reduction.id)
 
-    # pylint: enable = line-too-long
     @staticmethod
     def _replace_input(
-        line: str, lines: List[str], index: int, line_start: str, replacement: ColumnElement["JSONB"]
+        line: str,
+        lines: list[str],
+        index: int,
+        line_start: str,
+        replacement: ColumnElement["JSONB"],
     ) -> bool:
         if line.startswith(line_start):
             lines[index] = f"{line_start} = {replacement}"

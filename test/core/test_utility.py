@@ -5,7 +5,7 @@ Tests for utility functions
 import pytest
 
 from fia_api.core.exceptions import UnsafePathError
-from fia_api.core.utility import forbid_path_characters, filter_script_for_tokens
+from fia_api.core.utility import filter_script_for_tokens, forbid_path_characters
 
 
 def dummy_string_arg_function(arg: str) -> str:
@@ -57,7 +57,10 @@ SCRIPT = "from mantid.kernel import ConfigService\nfrom mantid.simpleapi import 
 EXPECTED_SCRIPT = "from mantid.kernel import ConfigService\nfrom mantid.simpleapi import *"
 
 
-@pytest.mark.parametrize("input_script,expected_script", [(GHP_SCRIPT, EXPECTED_SCRIPT), (SCRIPT, EXPECTED_SCRIPT)])
+@pytest.mark.parametrize(
+    ("input_script", "expected_script"),
+    [(GHP_SCRIPT, EXPECTED_SCRIPT), (SCRIPT, EXPECTED_SCRIPT)],
+)
 def test_filter_script_for_tokens(input_script, expected_script):
     """
     Test the filter script for tokens

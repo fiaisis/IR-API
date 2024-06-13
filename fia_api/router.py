@@ -4,31 +4,34 @@ Module containing the REST endpoints
 
 from __future__ import annotations
 
-
-from typing import Optional, List, Literal
+from typing import Literal
 
 from fastapi import APIRouter
-from starlette.background import BackgroundTasks
+from starlette.background import BackgroundTasks  # Fastapi docs require this
 
 from fia_api.core.responses import (
+    CountResponse,
     PreScriptResponse,
     ReductionResponse,
     ReductionWithRunsResponse,
-    CountResponse,
     RunResponse,
 )
 from fia_api.core.services.reduction import (
-    get_reductions_by_instrument,
-    get_reduction_by_id,
-    get_reductions_by_experiment_number,
     count_reductions,
     count_reductions_by_instrument,
+    get_reduction_by_id,
+    get_reductions_by_experiment_number,
+    get_reductions_by_instrument,
 )
-from fia_api.core.services.run import get_total_run_count, get_run_count_by_instrument, get_runs_by_instrument
+from fia_api.core.services.run import (
+    get_run_count_by_instrument,
+    get_runs_by_instrument,
+    get_total_run_count,
+)
 from fia_api.scripts.acquisition import (
+    get_script_by_sha,
     get_script_for_reduction,
     write_script_locally,
-    get_script_by_sha,
 )
 from fia_api.scripts.pre_script import PreScript
 
@@ -45,7 +48,7 @@ async def get() -> Literal["ok"]:
 async def get_pre_script(
     instrument: str,
     background_tasks: BackgroundTasks,
-    reduction_id: Optional[int] = None,
+    reduction_id: int | None = None,
 ) -> PreScriptResponse:
     """
     Script URI - Not intended for calling
@@ -66,7 +69,7 @@ async def get_pre_script(
 
 
 @ROUTER.get("/instrument/{instrument}/script/sha/{sha}")
-async def get_pre_script_by_sha(instrument: str, sha: str, reduction_id: Optional[int] = None) -> PreScriptResponse:
+async def get_pre_script_by_sha(instrument: str, sha: str, reduction_id: int | None = None) -> PreScriptResponse:
     """
     Given an instrument and the commit sha of a script, obtain the pre script. Optionally providing a reduction id to
     transform the script
@@ -101,7 +104,7 @@ async def get_reductions_for_instrument(
     order_by: OrderField = "reduction_start",
     order_direction: Literal["asc", "desc"] = "desc",
     include_runs: bool = False,
-) -> List[ReductionResponse] | List[ReductionWithRunsResponse]:
+) -> list[ReductionResponse] | list[ReductionWithRunsResponse]:
     """
     Retrieve a list of reductions for a given instrument.
     \f
@@ -116,7 +119,11 @@ async def get_reductions_for_instrument(
     """
     instrument = instrument.upper()
     reductions = get_reductions_by_instrument(
-        instrument, limit=limit, offset=offset, order_by=order_by, order_direction=order_direction
+        instrument,
+        limit=limit,
+        offset=offset,
+        order_by=order_by,
+        order_direction=order_direction,
     )
     if include_runs:
         return [ReductionWithRunsResponse.from_reduction(r) for r in reductions]
@@ -156,7 +163,7 @@ async def get_reductions_for_experiment(
     offset: int = 0,
     order_by: Literal["reduction_start", "reduction_end", "reduction_state", "id"] = "reduction_start",
     order_direction: Literal["desc", "asc"] = "desc",
-) -> List[ReductionResponse]:
+) -> list[ReductionResponse]:
     """
     Retrieve a list of reductions associated with a specific experiment number.
     \f
@@ -170,7 +177,11 @@ async def get_reductions_for_experiment(
     return [
         ReductionResponse.from_reduction(r)
         for r in get_reductions_by_experiment_number(
-            experiment_number, limit=limit, offset=offset, order_by=order_by, order_direction=order_direction
+            experiment_number,
+            limit=limit,
+            offset=offset,
+            order_by=order_by,
+            order_direction=order_direction,
         )
     ]
 
@@ -213,10 +224,16 @@ async def get_runs_for_instrument(
     limit: int = 0,
     offset: int = 0,
     order_by: Literal[
-        "experiment_number", "run_end", "run_start", "good_frames", "raw_frames", "id", "filename"
+        "experiment_number",
+        "run_end",
+        "run_start",
+        "good_frames",
+        "raw_frames",
+        "id",
+        "filename",
     ] = "run_start",
     order_direction: Literal["asc", "desc"] = "desc",
-) -> List[RunResponse]:
+) -> list[RunResponse]:
     """
     Get all runs for the given instrument
     \f
@@ -230,6 +247,10 @@ async def get_runs_for_instrument(
     return [
         RunResponse.from_run(run)
         for run in get_runs_by_instrument(
-            instrument.upper(), limit=limit, offset=offset, order_by=order_by, order_direction=order_direction
+            instrument.upper(),
+            limit=limit,
+            offset=offset,
+            order_by=order_by,
+            order_direction=order_direction,
         )
     ]

@@ -6,19 +6,18 @@ for fetching Reduction entities based on various criteria such as instrument nam
 and ordering preferences.
 """
 
-# pylint: disable=unused-argument
 # The limit and offsets in specifications will incorrectly flag as unused. They are used when they are intercepted by
 # the paginate decorator
 from __future__ import annotations
 
-from typing import Type, Optional, Literal, Union
+from typing import Literal
 
-from fia_api.core.model import Reduction, Instrument, Run, run_reduction_junction_table
-from fia_api.core.specifications.base import Specification, paginate, apply_ordering
+from fia_api.core.model import Instrument, Reduction, Run, run_reduction_junction_table
+from fia_api.core.specifications.base import Specification, apply_ordering, paginate
 
 ReductionOrderField = Literal["reduction_start", "reduction_end", "reduction_state", "id", "reduction_outputs"]
 RunOrderField = Literal["run_start", "run_end", "experiment_number", "experiment_title", "filename"]
-JointRunReductionOrderField = Union[RunOrderField, ReductionOrderField]
+JointRunReductionOrderField = RunOrderField | ReductionOrderField
 
 
 class ReductionSpecification(Specification[Reduction]):
@@ -30,15 +29,15 @@ class ReductionSpecification(Specification[Reduction]):
     """
 
     @property
-    def model(self) -> Type[Reduction]:
+    def model(self) -> type[Reduction]:
         return Reduction
 
     @paginate
     def by_instrument(
         self,
         instrument: str,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
+        limit: int | None = None,
+        offset: int | None = None,
         order_by: JointRunReductionOrderField = "id",
         order_direction: Literal["asc", "desc"] = "desc",
     ) -> ReductionSpecification:
@@ -100,8 +99,8 @@ class ReductionSpecification(Specification[Reduction]):
     def by_experiment_number(
         self,
         experiment_number: int,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
+        limit: int | None = None,
+        offset: int | None = None,
         order_by: ReductionOrderField = "id",
         order_direction: Literal["asc", "desc"] = "desc",
     ) -> ReductionSpecification:

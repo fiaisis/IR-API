@@ -8,7 +8,7 @@ from fia_api.scripts.transforms.mari_transforms import MariTransform
 from fia_api.scripts.transforms.osiris_transform import OsirisTransform
 from fia_api.scripts.transforms.test_transforms import TestTransform
 from fia_api.scripts.transforms.tosca_transform import ToscaTransform
-from fia_api.scripts.transforms.transform import Transform, MissingTransformError
+from fia_api.scripts.transforms.transform import MissingTransformError, Transform
 
 logger = logging.getLogger(__name__)
 

@@ -6,15 +6,14 @@ for Run entities based on various criteria such as instrument, limit, offset,
 order by, and order direction.
 """
 
-# pylint: disable=unused-argument
 # The limit and offsets in specifications will incorrectly flag as unused. They are used when they are intercepted by
 # the paginate decorator
 from __future__ import annotations
 
-from typing import Type, Literal
+from typing import Literal
 
-from fia_api.core.model import Run, Instrument
-from fia_api.core.specifications.base import Specification, paginate, apply_ordering
+from fia_api.core.model import Instrument, Run
+from fia_api.core.specifications.base import Specification, apply_ordering, paginate
 
 
 class RunSpecification(Specification[Run]):
@@ -26,7 +25,7 @@ class RunSpecification(Specification[Run]):
     """
 
     @property
-    def model(self) -> Type[Run]:
+    def model(self) -> type[Run]:
         return Run
 
     @paginate
@@ -36,7 +35,13 @@ class RunSpecification(Specification[Run]):
         limit: int = 0,
         offset: int = 0,
         order_by: Literal[
-            "experiment_number", "run_end", "run_start", "good_frames", "raw_frames", "id", "filename"
+            "experiment_number",
+            "run_end",
+            "run_start",
+            "good_frames",
+            "raw_frames",
+            "id",
+            "filename",
         ] = "run_start",
         order_direction: Literal["asc", "desc"] = "desc",
     ) -> RunSpecification:

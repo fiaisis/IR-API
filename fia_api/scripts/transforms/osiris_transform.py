@@ -4,7 +4,7 @@ scripts.
 """
 
 import logging
-from typing import Iterable
+from collections.abc import Iterable
 
 from fia_api.core.model import Reduction
 from fia_api.scripts.pre_script import PreScript
@@ -33,9 +33,7 @@ class OsirisTransform(Transform):
                 )
                 continue
             if line.startswith("calibration_file_path"):
-                lines[index] = (
-                    f"calibration_file_path = \"{reduction.reduction_inputs['calibration_file_path']}\""
-                )  # type:ignore
+                lines[index] = f"calibration_file_path = \"{reduction.reduction_inputs['calibration_file_path']}\""  # type:ignore
                 continue
             if line.startswith("cycle ="):
                 lines[index] = f"cycle = \"{reduction.reduction_inputs['cycle_string']}\""  # type:ignore
@@ -44,14 +42,10 @@ class OsirisTransform(Transform):
                 lines[index] = f"reflection = \"{reduction.reduction_inputs['analyser']}\""  # type:ignore
                 continue
             if line.startswith("spectroscopy_reduction ="):
-                lines[index] = (
-                    f"spectroscopy_reduction = {reduction.reduction_inputs['mode'] == 'spectroscopy'}"
-                )  # type:ignore
+                lines[index] = f"spectroscopy_reduction = {reduction.reduction_inputs['mode'] == 'spectroscopy'}"  # type:ignore
                 continue
             if line.startswith("diffraction_reduction = "):
-                lines[index] = (
-                    f"diffraction_reduction = {reduction.reduction_inputs['mode'] == 'diffraction'}"
-                )  # type:ignore
+                lines[index] = f"diffraction_reduction = {reduction.reduction_inputs['mode'] == 'diffraction'}"  # type:ignore
                 continue
 
         script.value = "\n".join(lines)

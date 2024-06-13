@@ -10,14 +10,14 @@ import datetime
 import pytest
 
 from fia_api.core.exceptions import NonUniqueRecordError
-from fia_api.core.model import Base, Script, Instrument, Reduction, ReductionState, Run
+from fia_api.core.model import Base, Instrument, Reduction, ReductionState, Run, Script
 from fia_api.core.repositories import ENGINE, SESSION, Repo
 from fia_api.core.specifications.reduction import ReductionSpecification
 from fia_api.core.specifications.run import RunSpecification
 
 # pylint: disable = redefined-outer-name
 
-TEST_SCRIPT = Script(script="print('Script 1')")
+TEST_SCRIPT = Script(script="print('Script 1')", sha="some_sha", script_hash="some_hash")
 TEST_REDUCTION = Reduction(
     reduction_start=datetime.datetime.now(datetime.UTC),
     reduction_state=ReductionState.NOT_STARTED,
@@ -84,7 +84,7 @@ TEST_RUN_3.reductions.append(TEST_REDUCTION_4)
 
 
 @pytest.fixture(scope="module", autouse=True)
-def setup() -> None:
+def _setup() -> None:
     """
     Set up the test database before module
     :return: None
@@ -107,8 +107,6 @@ def setup() -> None:
         session.refresh(TEST_RUN_1)
         session.refresh(TEST_RUN_2)
         session.refresh(TEST_RUN_3)
-
-    yield
 
 
 @pytest.fixture()
@@ -149,7 +147,11 @@ def test_run_by_instrument(run_repo):
     assert result == [TEST_RUN_1, TEST_RUN_2]
     result = run_repo.find(
         RunSpecification().by_instrument(
-            "instrument 1", limit=1, offset=1, order_by="good_frames", order_direction="desc"
+            "instrument 1",
+            limit=1,
+            offset=1,
+            order_by="good_frames",
+            order_direction="desc",
         )
     )
     assert result == [TEST_RUN_2]
@@ -162,7 +164,7 @@ def test_run_by_instrument_raises_when_non_unique(run_repo):
 
 
 @pytest.mark.parametrize(
-    ("order_field,expected_ascending"),
+    ("order_field", "expected_ascending"),
     [
         ("run_start", [TEST_REDUCTION_2, TEST_REDUCTION]),
         ("run_end", [TEST_REDUCTION_2, TEST_REDUCTION]),

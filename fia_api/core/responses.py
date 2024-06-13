@@ -5,11 +5,11 @@ responses module contains api response definitions
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional, Any, List
+from typing import Any
 
 from pydantic import BaseModel
 
-from fia_api.core.model import ReductionState, Reduction, Run, Script
+from fia_api.core.model import Reduction, ReductionState, Run, Script
 from fia_api.core.utility import filter_script_for_tokens
 
 
@@ -44,7 +44,7 @@ class PreScriptResponse(BaseModel):
 
     value: str
     is_latest: bool
-    sha: Optional[str] = None
+    sha: str | None = None
 
 
 class RunResponse(BaseModel):
@@ -88,14 +88,14 @@ class ReductionResponse(BaseModel):
     """
 
     id: int
-    reduction_start: Optional[datetime]
-    reduction_end: Optional[datetime]
+    reduction_start: datetime | None
+    reduction_end: datetime | None
     reduction_state: ReductionState
-    reduction_status_message: Optional[str]
+    reduction_status_message: str | None
     reduction_inputs: Any
-    reduction_outputs: Optional[str]
-    stacktrace: Optional[str]
-    script: Optional[ScriptResponse]
+    reduction_outputs: str | None
+    stacktrace: str | None
+    script: ScriptResponse | None
 
     @staticmethod
     def from_reduction(reduction: Reduction) -> ReductionResponse:
@@ -123,7 +123,7 @@ class ReductionWithRunsResponse(ReductionResponse):
     ReductionWithRunsResponse is the same as a reduction response, with the runs nested
     """
 
-    runs: List[RunResponse]
+    runs: list[RunResponse]
 
     @staticmethod
     def from_reduction(reduction: Reduction) -> ReductionWithRunsResponse:

@@ -2,7 +2,7 @@
 end-to-end tests
 """
 
-# pylint: disable=line-too-long, wrong-import-order
+from http import HTTPStatus
 from unittest.mock import patch
 
 from starlette.testclient import TestClient
@@ -22,7 +22,7 @@ def test_get_reduction_by_id_reduction_doesnt_exist():
     :return:
     """
     response = client.get("/reduction/123144324234234234")
-    assert response.status_code == 404
+    assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json() == {"message": "Resource not found"}
 
 
@@ -32,7 +32,7 @@ def test_get_reduction_by_id_reduction_exists():
     :return:
     """
     response = client.get("/reduction/5001")
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     assert response.json() == {
         "id": 5001,
         "reduction_end": None,
@@ -66,6 +66,7 @@ def test_get_reduction_by_id_reduction_exists():
             }
         ],
         "script": None,
+        "stacktrace": None,
     }
 
 
@@ -76,18 +77,19 @@ def test_get_prescript_when_reduction_does_not_exist():
     :return:
     """
     response = client.get("/instrument/mari/script?reduction_id=4324234")
-    assert response.status_code == 404
+    assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json() == {"message": "Resource not found"}
 
 
-@patch("fia_api.scripts.acquisition._get_script_from_remote", side_effect=RuntimeError)
-def test_unsafe_path_request_returns_400_status(_):
+@patch("fia_api.scripts.acquisition._get_script_from_remote")
+def test_unsafe_path_request_returns_400_status(mock_get_from_remote):
     """
     Test that a 400 is returned for unsafe characters in script request
     :return:
     """
+    mock_get_from_remote.side_effect = RuntimeError
     response = client.get("/instrument/mari./script")  # %2F is encoded /
-    assert response.status_code == 400
+    assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() == {"message": "The given request contains bad characters"}
 
 
@@ -98,7 +100,7 @@ def test_get_test_prescript_for_reduction():
     :return: None
     """
     response = client.get("/instrument/test/script?reduction_id=1")
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     response_object = response.json()
 
     assert response_object["is_latest"]
@@ -129,7 +131,7 @@ def test_get_reductions_for_experiment_number():
     :return:
     """
     response = client.get("/experiment/1820497/reductions")
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     assert response.json() == [
         {
             "id": 5001,
@@ -151,6 +153,7 @@ def test_get_reductions_for_experiment_number():
             "reduction_state": "NOT_STARTED",
             "reduction_status_message": None,
             "script": None,
+            "stacktrace": None,
         }
     ]
 
@@ -161,7 +164,7 @@ def test_get_reductions_for_experiment_number_does_not_exist():
     :return:
     """
     response = client.get("/experiment/12345678/reductions")
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     assert response.json() == []
 
 
@@ -171,7 +174,7 @@ def test_get_reductions_for_instrument_reductions_exist():
     :return: None
     """
     response = client.get("/instrument/test/reductions")
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     assert response.json() == [
         {
             "id": 5001,
@@ -193,6 +196,7 @@ def test_get_reductions_for_instrument_reductions_exist():
             "reduction_state": "NOT_STARTED",
             "reduction_status_message": None,
             "script": None,
+            "stacktrace": None,
         }
     ]
 
@@ -200,7 +204,7 @@ def test_get_reductions_for_instrument_reductions_exist():
 def test_get_reductions_for_instrument_runs_included():
     """Test runs are included when requested for given instrument when instrument and reductions exist"""
     response = client.get("/instrument/test/reductions?include_runs=true")
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     assert response.json() == [
         {
             "id": 5001,
@@ -234,6 +238,7 @@ def test_get_reductions_for_instrument_runs_included():
                 }
             ],
             "script": None,
+            "stacktrace": None,
         }
     ]
 
@@ -244,7 +249,7 @@ def test_reductions_by_instrument_no_reductions():
     :return:
     """
     response = client.get("/instrument/foo/reductions")
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     assert response.json() == []
 
 
@@ -254,14 +259,14 @@ def test_reductions_count():
     :return:
     """
     response = client.get("/reductions/count")
-    assert response.status_code == 200
-    assert response.json()["count"] == 5001
+    assert response.status_code == HTTPStatus.OK
+    assert response.json()["count"] == 5001  # noqa: PLR2004
 
 
 def test_limit_reductions():
     """Test reductions can be limited"""
     response = client.get("/instrument/mari/reductions?limit=4")
-    assert len(response.json()) == 4
+    assert len(response.json()) == 4  # noqa: PLR2004
 
 
 def test_offset_reductions():
@@ -280,7 +285,7 @@ def test_limit_offset_reductions():
     response_one = client.get("/instrument/mari/reductions?limit=4")
     response_two = client.get("/instrument/mari/reductions?limit=4&offset=10")
 
-    assert len(response_two.json()) == 4
+    assert len(response_two.json()) == 4  # noqa: PLR2004
     assert response_one.json() != response_two.json()
 
 
@@ -306,7 +311,7 @@ def test_total_runs_count():
     Test total runs count
     """
     response = client.get("/runs/count")
-    assert response.json()["count"] == 5001
+    assert response.json()["count"] == 5001  # noqa: PLR2004
 
 
 def test_get_runs_by_instrument():
@@ -327,7 +332,7 @@ def test_get_runs_by_instrument():
         "title": "Whitebeam - vanadium - detector tests - vacuum bad - HT on not on all LAB",
         "users": "Wood,Guidi,Benedek,Mansson,Juranyi,Nocerino,Forslund,Matsubara",
     }
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
 
 
 def test_readiness_and_liveness_probes():
@@ -336,5 +341,5 @@ def test_readiness_and_liveness_probes():
     :return: None
     """
     response = client.get("/healthz")
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     assert response.text == '"ok"'

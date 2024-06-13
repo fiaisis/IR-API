@@ -4,7 +4,11 @@ Tests for run service
 
 from unittest.mock import patch
 
-from fia_api.core.services.run import get_runs_by_instrument, get_run_count_by_instrument, get_total_run_count
+from fia_api.core.services.run import (
+    get_run_count_by_instrument,
+    get_runs_by_instrument,
+    get_total_run_count,
+)
 
 
 @patch("fia_api.core.services.run._REPO")
