@@ -67,33 +67,6 @@ def get_reduction_by_id(reduction_id: int) -> Reduction:
     return reduction
 
 
-def get_reductions_by_experiment_number(
-    experiment_number: int,
-    limit: int = 0,
-    offset: int = 0,
-    order_by: Literal["reduction_start", "reduction_end", "reduction_state", "id"] = "reduction_start",
-    order_direction: Literal["asc", "desc"] = "desc",
-) -> Sequence[Reduction]:
-    """
-    Given an experiment number, return all reductions for that experiment
-    :param experiment_number: The experiment number
-    :param limit: (int) - the maximum number of results to be allowed in the sequence
-    :param offset: (int) - the number of reductions to offset the sequence from the entire reduction set
-    :param order_direction: (str) Direction to der by "asc" | "desc"
-    :param order_by: (str) Field to order by.
-    :return: List of reductions
-    """
-    return _REPO.find(
-        ReductionSpecification().by_experiment_number(
-            experiment_number=experiment_number,
-            limit=limit,
-            offset=offset,
-            order_direction=order_direction,
-            order_by=order_by,
-        )
-    )
-
-
 def count_reductions_by_instrument(instrument: str) -> int:
     """
     Given an instrument name, count the reductions for that instrument
