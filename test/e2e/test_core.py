@@ -125,48 +125,6 @@ something()"""
     )
 
 
-def test_get_reductions_for_experiment_number():
-    """
-    Test reduction returned for experiment
-    :return:
-    """
-    response = client.get("/experiment/1820497/reductions")
-    assert response.status_code == HTTPStatus.OK
-    assert response.json() == [
-        {
-            "id": 5001,
-            "reduction_end": None,
-            "reduction_inputs": {
-                "ei": "'auto'",
-                "mask_file_link": "https://raw.githubusercontent.com/pace-neutrons/InstrumentFiles/"
-                "964733aec28b00b13f32fb61afa363a74dd62130/mari/mari_mask2023_1.xml",
-                "monovan": 0,
-                "remove_bkg": True,
-                "runno": 25581,
-                "sam_mass": 0.0,
-                "sam_rmm": 0.0,
-                "sum_runs": False,
-                "wbvan": 12345,
-            },
-            "reduction_outputs": None,
-            "reduction_start": None,
-            "reduction_state": "NOT_STARTED",
-            "reduction_status_message": None,
-            "script": None,
-            "stacktrace": None,
-        }
-    ]
-
-
-def test_get_reductions_for_experiment_number_does_not_exist():
-    """
-    Test empty array returned when no reduction for an experiment number
-    :return:
-    """
-    response = client.get("/experiment/12345678/reductions")
-    assert response.status_code == HTTPStatus.OK
-    assert response.json() == []
-
 
 def test_get_reductions_for_instrument_reductions_exist():
     """
@@ -304,35 +262,6 @@ def test_instrument_runs_count():
     """
     response = client.get("/instrument/TEST/runs/count")
     assert response.json()["count"] == 1
-
-
-def test_total_runs_count():
-    """
-    Test total runs count
-    """
-    response = client.get("/runs/count")
-    assert response.json()["count"] == 5001  # noqa: PLR2004
-
-
-def test_get_runs_by_instrument():
-    """
-    Test getting runs by instrument
-    :return:
-    """
-    response = client.get("/instrument/TEST/runs")
-    assert len(response.json()) == 1
-    assert response.json()[0] == {
-        "experiment_number": 1820497,
-        "filename": "MAR25581.nxs",
-        "good_frames": 6452,
-        "instrument_name": "TEST",
-        "raw_frames": 8067,
-        "run_end": "2019-03-22T10:18:26",
-        "run_start": "2019-03-22T10:15:44",
-        "title": "Whitebeam - vanadium - detector tests - vacuum bad - HT on not on all LAB",
-        "users": "Wood,Guidi,Benedek,Mansson,Juranyi,Nocerino,Forslund,Matsubara",
-    }
-    assert response.status_code == HTTPStatus.OK
 
 
 def test_readiness_and_liveness_probes():

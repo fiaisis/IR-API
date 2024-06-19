@@ -94,30 +94,3 @@ class ReductionSpecification(Specification[Reduction]):
                 self.value = apply_ordering(self.value, self.model, order_by, order_direction)
 
         return self
-
-    @paginate
-    def by_experiment_number(
-        self,
-        experiment_number: int,
-        limit: int | None = None,
-        offset: int | None = None,
-        order_by: ReductionOrderField = "id",
-        order_direction: Literal["asc", "desc"] = "desc",
-    ) -> ReductionSpecification:
-        """
-        Filters reductions by the specified experiment number and applies ordering, limit, and offset to the query.
-
-        :param experiment_number: The experiment number to filter reductions by.
-        :param limit: The maximum number of reductions to return. None indicates no limit.
-        :param offset: The number of reductions to skip before starting to return the results. None for no offset.
-        :param order_by: The attribute of the Reduction entity to order the reductions by.
-        :param order_direction: The direction to order the reductions, either 'asc' for ascending or 'desc' for
-        descending.
-        :return: An instance of ReductionSpecification with the applied filters and ordering.
-        """
-
-        self.value = (
-            self.value.join(run_reduction_junction_table).join(Run).where(Run.experiment_number == experiment_number)
-        )
-        apply_ordering(self.value, self.model, order_by, order_direction)
-        return self

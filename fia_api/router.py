@@ -4,29 +4,21 @@ Module containing the REST endpoints
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from fastapi import APIRouter
-from starlette.background import BackgroundTasks  # Fastapi docs require this
 
 from fia_api.core.responses import (
     CountResponse,
     PreScriptResponse,
     ReductionResponse,
     ReductionWithRunsResponse,
-    RunResponse,
 )
 from fia_api.core.services.reduction import (
     count_reductions,
     count_reductions_by_instrument,
     get_reduction_by_id,
-    get_reductions_by_experiment_number,
     get_reductions_by_instrument,
-)
-from fia_api.core.services.run import (
-    get_run_count_by_instrument,
-    get_runs_by_instrument,
-    get_total_run_count,
 )
 from fia_api.scripts.acquisition import (
     get_script_by_sha,
@@ -34,6 +26,9 @@ from fia_api.scripts.acquisition import (
     write_script_locally,
 )
 from fia_api.scripts.pre_script import PreScript
+
+if TYPE_CHECKING:
+    from starlette.background import BackgroundTasks
 
 ROUTER = APIRouter()
 
@@ -156,36 +151,6 @@ async def get_reduction(reduction_id: int) -> ReductionWithRunsResponse:
     return ReductionWithRunsResponse.from_reduction(reduction)
 
 
-@ROUTER.get("/experiment/{experiment_number}/reductions")
-async def get_reductions_for_experiment(
-    experiment_number: int,
-    limit: int = 0,
-    offset: int = 0,
-    order_by: Literal["reduction_start", "reduction_end", "reduction_state", "id"] = "reduction_start",
-    order_direction: Literal["desc", "asc"] = "desc",
-) -> list[ReductionResponse]:
-    """
-    Retrieve a list of reductions associated with a specific experiment number.
-    \f
-    :param experiment_number: the unique experiment number:
-    :param limit: Number of results to limit to
-    :param offset: Number of results to offset by
-    :param order_by: Literal["reduction_start", "reduction_end", "reduction_state", "id"]
-    :param order_direction: Literal["asc", "desc"]
-    :return: List of ReductionResponse objects
-    """
-    return [
-        ReductionResponse.from_reduction(r)
-        for r in get_reductions_by_experiment_number(
-            experiment_number,
-            limit=limit,
-            offset=offset,
-            order_by=order_by,
-            order_direction=order_direction,
-        )
-    ]
-
-
 @ROUTER.get("/reductions/count")
 async def count_all_reductions() -> CountResponse:
     """
@@ -194,63 +159,3 @@ async def count_all_reductions() -> CountResponse:
     :return: CountResponse containing the count
     """
     return CountResponse(count=count_reductions())
-
-
-@ROUTER.get("/runs/count")
-async def count_all_runs() -> CountResponse:
-    """
-    Count all runs
-    \f
-    :return: Count response containing the count
-    """
-    return CountResponse(count=get_total_run_count())
-
-
-@ROUTER.get("/instrument/{instrument}/runs/count")
-async def count_runs_for_instrument(instrument: str) -> CountResponse:
-    """
-    Count the total runs for the given instrument
-    \f
-    :param instrument: The instrument
-    :return: The count response
-    """
-    instrument = instrument.upper()
-    return CountResponse(count=get_run_count_by_instrument(instrument))
-
-
-@ROUTER.get("/instrument/{instrument}/runs")
-async def get_runs_for_instrument(
-    instrument: str,
-    limit: int = 0,
-    offset: int = 0,
-    order_by: Literal[
-        "experiment_number",
-        "run_end",
-        "run_start",
-        "good_frames",
-        "raw_frames",
-        "id",
-        "filename",
-    ] = "run_start",
-    order_direction: Literal["asc", "desc"] = "desc",
-) -> list[RunResponse]:
-    """
-    Get all runs for the given instrument
-    \f
-    :param instrument: The instrument
-    :param limit: Optional limit to apply
-    :param offset: Optional offset to apply
-    :param order_by: Optional field to order by
-    :param order_direction: Optional direction to order by
-    :return: List of RunResponses
-    """
-    return [
-        RunResponse.from_run(run)
-        for run in get_runs_by_instrument(
-            instrument.upper(),
-            limit=limit,
-            offset=offset,
-            order_by=order_by,
-            order_direction=order_direction,
-        )
-    ]
