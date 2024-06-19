@@ -125,7 +125,6 @@ something()"""
     )
 
 
-
 def test_get_reductions_for_instrument_reductions_exist():
     """
     Test array of reductions returned for given instrument when the instrument and reductions exist

@@ -125,8 +125,6 @@ def run_repo() -> Repo[Run]:
     return Repo()
 
 
-
-
 @pytest.mark.parametrize(
     ("order_field", "expected_ascending"),
     [
