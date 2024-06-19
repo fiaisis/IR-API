@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import Literal
 
 from fastapi import APIRouter
-from starlette.background import BackgroundTasks  # noqa: TCH002
+from starlette.background import BackgroundTasks
 
 from fia_api.core.responses import (
     CountResponse,
@@ -39,9 +39,9 @@ async def get() -> Literal["ok"]:
 
 @ROUTER.get("/instrument/{instrument}/script")
 async def get_pre_script(
-        instrument: str,
-        background_tasks: BackgroundTasks,
-        reduction_id: int | None = None,
+    instrument: str,
+    background_tasks: BackgroundTasks,
+    reduction_id: int | None = None,
 ) -> PreScriptResponse:
     """
     Script URI - Not intended for calling
@@ -91,12 +91,12 @@ OrderField = Literal[
 
 @ROUTER.get("/instrument/{instrument}/reductions")
 async def get_reductions_for_instrument(
-        instrument: str,
-        limit: int = 0,
-        offset: int = 0,
-        order_by: OrderField = "reduction_start",
-        order_direction: Literal["asc", "desc"] = "desc",
-        include_runs: bool = False,
+    instrument: str,
+    limit: int = 0,
+    offset: int = 0,
+    order_by: OrderField = "reduction_start",
+    order_direction: Literal["asc", "desc"] = "desc",
+    include_runs: bool = False,
 ) -> list[ReductionResponse] | list[ReductionWithRunsResponse]:
     """
     Retrieve a list of reductions for a given instrument.
@@ -125,7 +125,7 @@ async def get_reductions_for_instrument(
 
 @ROUTER.get("/instrument/{instrument}/reductions/count")
 async def count_reductions_for_instrument(
-        instrument: str,
+    instrument: str,
 ) -> CountResponse:
     """
     Count reductions for a given instrument.
