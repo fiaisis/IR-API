@@ -36,11 +36,13 @@ def test_get_reduction_by_id_no_token_results_in_http_forbidden():
     assert response.status_code == HTTPStatus.FORBIDDEN
 
 
-def test_get_reduction_by_id_reduction_exists_for_staff():
+@patch("fia_api.core.auth.tokens.requests.post")
+def test_get_reduction_by_id_reduction_exists_for_staff(mock_post):
     """
     Test reduction returned for id that exists
     :return:
     """
+    mock_post.return_value.status_code = HTTPStatus.OK
     response = client.get("/reduction/5001", headers={"Authorization": f"Bearer {STAFF_TOKEN}"})
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {
@@ -144,11 +146,13 @@ def test_get_reductions_for_instrument_no_token_results_in_forbidden():
     assert response.status_code == HTTPStatus.FORBIDDEN
 
 
-def test_get_reductions_for_instrument_reductions_exist_for_staff():
+@patch("fia_api.core.auth.tokens.requests.post")
+def test_get_reductions_for_instrument_reductions_exist_for_staff(mock_post):
     """
     Test array of reductions returned for given instrument when the instrument and reductions exist
     :return: None
     """
+    mock_post.return_value.status_code = HTTPStatus.OK
     response = client.get("/instrument/test/reductions", headers={"Authorization": f"Bearer {STAFF_TOKEN}"})
     assert response.status_code == HTTPStatus.OK
     assert response.json() == [
@@ -177,8 +181,10 @@ def test_get_reductions_for_instrument_reductions_exist_for_staff():
     ]
 
 
-def test_get_reductions_for_instrument_runs_included_for_staff():
+@patch("fia_api.core.auth.tokens.requests.post")
+def test_get_reductions_for_instrument_runs_included_for_staff(mock_post):
     """Test runs are included when requested for given instrument when instrument and reductions exist"""
+    mock_post.return_value.status_code = HTTPStatus.OK
     response = client.get(
         "/instrument/test/reductions?include_runs=true", headers={"Authorization": f"Bearer {STAFF_TOKEN}"}
     )
@@ -221,11 +227,13 @@ def test_get_reductions_for_instrument_runs_included_for_staff():
     ]
 
 
-def test_reductions_by_instrument_no_reductions():
+@patch("fia_api.core.auth.tokens.requests.post")
+def test_reductions_by_instrument_no_reductions(mock_post):
     """
     Test empty array returned when no reductions for instrument
     :return:
     """
+    mock_post.return_value.status_code = HTTPStatus.OK
     response = client.get("/instrument/foo/reductions", headers={"Authorization": f"Bearer {STAFF_TOKEN}"})
     assert response.status_code == HTTPStatus.OK
     assert response.json() == []
@@ -241,16 +249,20 @@ def test_reductions_count():
     assert response.json()["count"] == 5001  # noqa: PLR2004
 
 
-def test_limit_reductions():
+@patch("fia_api.core.auth.tokens.requests.post")
+def test_limit_reductions(mock_post):
     """Test reductions can be limited"""
+    mock_post.return_value.status_code = HTTPStatus.OK
     response = client.get("/instrument/mari/reductions?limit=4", headers={"Authorization": f"Bearer {STAFF_TOKEN}"})
     assert len(response.json()) == 4  # noqa: PLR2004
 
 
-def test_offset_reductions():
+@patch("fia_api.core.auth.tokens.requests.post")
+def test_offset_reductions(mock_post):
     """
     Test results are offset
     """
+    mock_post.return_value.status_code = HTTPStatus.OK
     response_one = client.get("/instrument/mari/reductions", headers={"Authorization": f"Bearer {STAFF_TOKEN}"})
     response_two = client.get(
         "/instrument/mari/reductions?offset=10", headers={"Authorization": f"Bearer {STAFF_TOKEN}"}
@@ -258,10 +270,12 @@ def test_offset_reductions():
     assert response_one.json()[0] != response_two.json()[0]
 
 
-def test_limit_offset_reductions():
+@patch("fia_api.core.auth.tokens.requests.post")
+def test_limit_offset_reductions(mock_post):
     """
     Test offset with limit
     """
+    mock_post.return_value.status_code = HTTPStatus.OK
     response_one = client.get("/instrument/mari/reductions?limit=4", headers={"Authorization": f"Bearer {STAFF_TOKEN}"})
     response_two = client.get(
         "/instrument/mari/reductions?limit=4&offset=10", headers={"Authorization": f"Bearer {STAFF_TOKEN}"}
