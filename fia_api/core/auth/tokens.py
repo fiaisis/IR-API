@@ -1,27 +1,76 @@
+import logging
 import os
+from dataclasses import dataclass
+from http import HTTPStatus
+from typing import Literal
 
 import jwt
 import requests
+from fastapi import HTTPException, Request, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-AUTH_URL = os.environ.get("AUTH_API_URL", "http://localhost:8001")
+from fia_api.core.exceptions import AuthenticationError
+
+logger = logging.getLogger(__name__)
+
+AUTH_URL = os.environ.get("AUTH_API_URL", "http://127.0.0.1:8001")
 
 
-def is_token_valid(token: str) -> bool:
+@dataclass
+class User:
+    user_number: int
+    role: Literal["staff", "user"]
+
+
+def get_user_from_token(token: str) -> User:
+    try:
+        payload = jwt.decode(token, options={"verify_signature": False})
+        return User(user_number=payload.get("usernumber"), role=payload.get("role"))
+    except RuntimeError as exc:
+        raise AuthenticationError("Problem unpacking jwt token") from exc
+
+
+class JWTBearer(HTTPBearer):
     """
-    Given a token, check if it signed and not expired via the auth service
-    :param token: The token to check
-    :return: bool -- True if the token is valid, False otherwise
+    Extends the FastAPI `HTTPBearer` class to provide JSON Web Token (JWT) based authentication/authorization.
     """
-    response = requests.post(f"http://{AUTH_URL}/api/jwt/checkToken", json={"token": token}, timeout=30)
-    return response.text == "ok"
 
+    async def __call__(self, request: Request) -> str:
+        """
+        Callable method for JWT access token authentication/authorization.
 
-def is_staff(token: str) -> bool:
-    """
-    Given a token, check if the role is staff. Note this only unpacks the JWT, it does NOT perform signature
-    verification. This should be performed separately
-    :param token: The token to check
-    :return: bool -- True if the role is staff False otherwise
-    """
-    payload = jwt.decode(token, options={"verify_signature": False})
-    return payload.get("role") == "staff"
+        This method is called when `JWTBearer` is used as a dependency in a FastAPI route. It performs authentication/
+        authorization by calling the parent class method and then verifying the JWT access token.
+        :param request: The FastAPI `Request` object.
+        :return: The JWT access token if authentication is successful.
+        :raises HTTPException: If the supplied JWT access token is invalid or has expired.
+        """
+        credentials: HTTPAuthorizationCredentials = await super().__call__(request)
+        try:
+            token = credentials.credentials
+        except RuntimeError as exc:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid token or expired token") from exc
+
+        if not self._is_jwt_access_token_valid(token):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid token or expired token")
+
+        return credentials.credentials
+
+    def _is_jwt_access_token_valid(self, access_token: str) -> bool:
+        """
+        Check if the JWT access token is valid.
+
+        It does this by checking that it was signed by the corresponding private key and has not expired. It also
+        requires the payload to contain a username.
+        :param access_token: The JWT access token to check.
+        :return: `True` if the JWT access token is valid and its payload contains a username, `False` otherwise.
+        """
+        logger.info("Checking if JWT access token is valid")
+        try:
+            response = requests.post(f"{AUTH_URL}/api/jwt/checkToken", json={"token": access_token}, timeout=30)
+            if response.status_code == HTTPStatus.OK:
+                logger.info("JWT was valid")
+                return True
+        except RuntimeError:  # pylint: disable=broad-exception-caught)
+            logger.exception("Error decoding JWT access token")
+            return False
