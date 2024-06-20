@@ -5,7 +5,8 @@ Service Layer for reductions
 from collections.abc import Sequence
 from typing import Literal
 
-from fia_api.core.exceptions import MissingRecordError
+from fia_api.core.auth.experiments import get_experiments_for_user_number
+from fia_api.core.exceptions import AuthenticationError, MissingRecordError
 from fia_api.core.model import Reduction
 from fia_api.core.repositories import Repo
 from fia_api.core.specifications.reduction import ReductionSpecification
@@ -32,6 +33,7 @@ def get_reductions_by_instrument(
     offset: int = 0,
     order_by: OrderField = "reduction_start",
     order_direction: Literal["asc", "desc"] = "desc",
+    user_number: int | None = None,
 ) -> Sequence[Reduction]:
     """
     Given an instrument name return a sequence of reductions for that instrument. Optionally providing a limit and
@@ -43,6 +45,7 @@ def get_reductions_by_instrument(
     :param order_by: (str) Field to order by.
     :return: Sequence of Reductions for an instrument
     """
+
     return _REPO.find(
         ReductionSpecification().by_instrument(
             instrument=instrument,
@@ -50,11 +53,12 @@ def get_reductions_by_instrument(
             offset=offset,
             order_by=order_by,
             order_direction=order_direction,
+            user_number=user_number,
         )
     )
 
 
-def get_reduction_by_id(reduction_id: int) -> Reduction:
+def get_reduction_by_id(reduction_id: int, user_number: int | None = None) -> Reduction:
     """
     Given an ID return the reduction with that ID
     :param reduction_id: The id of the reduction to search for
@@ -64,6 +68,12 @@ def get_reduction_by_id(reduction_id: int) -> Reduction:
     reduction = _REPO.find_one(ReductionSpecification().by_id(reduction_id))
     if reduction is None:
         raise MissingRecordError(f"No Reduction for id {reduction_id}")
+
+    if user_number:
+        experiments = get_experiments_for_user_number(user_number)
+        if not any(run.experiment_number in experiments for run in reduction.runs):
+            raise AuthenticationError("User does not have permission for run")
+
     return reduction
 
 
