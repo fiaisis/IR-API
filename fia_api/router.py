@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends
-from starlette.background import BackgroundTasks  # noqa: TCH002
+from starlette.background import BackgroundTasks
 
 from fia_api.core.auth.tokens import JWTBearer, get_user_from_token
 from fia_api.core.responses import (
