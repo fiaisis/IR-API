@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from typing import Literal
 
+from fia_api.core.auth.experiments import get_experiments_for_user_number
 from fia_api.core.model import Instrument, Reduction, Run, run_reduction_junction_table
 from fia_api.core.specifications.base import Specification, apply_ordering, paginate
 
@@ -40,6 +41,7 @@ class ReductionSpecification(Specification[Reduction]):
         offset: int | None = None,
         order_by: JointRunReductionOrderField = "id",
         order_direction: Literal["asc", "desc"] = "desc",
+        user_number: int | None = None,
     ) -> ReductionSpecification:
         """
         Filters reductions by the specified instrument and applies ordering, limit, and offset to the query.
@@ -58,6 +60,9 @@ class ReductionSpecification(Specification[Reduction]):
             .join(Instrument)
             .where(Instrument.instrument_name == instrument)
         )
+        if user_number:
+            experiment_numbers = get_experiments_for_user_number(user_number)
+            self.value = self.value.where(Run.experiment_number.in_(experiment_numbers))
 
         match order_by:
             case "filename":
