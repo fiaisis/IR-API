@@ -35,7 +35,7 @@ class JWTBearer(HTTPBearer):
     Extends the FastAPI `HTTPBearer` class to provide JSON Web Token (JWT) based authentication/authorization.
     """
 
-    async def __call__(self, request: Request) -> str:
+    async def __call__(self, request: Request) -> HTTPAuthorizationCredentials | None:
         """
         Callable method for JWT access token authentication/authorization.
 
@@ -45,16 +45,16 @@ class JWTBearer(HTTPBearer):
         :return: The JWT access token if authentication is successful.
         :raises HTTPException: If the supplied JWT access token is invalid or has expired.
         """
-        credentials: HTTPAuthorizationCredentials = await super().__call__(request)
+        credentials: HTTPAuthorizationCredentials | None = await super().__call__(request)
         try:
-            token = credentials.credentials
+            token = credentials.credentials  # type: ignore # if credentials is None, it will raise here and be caught immediately
         except RuntimeError as exc:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid token or expired token") from exc
 
         if not self._is_jwt_access_token_valid(token):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid token or expired token")
 
-        return credentials.credentials
+        return credentials
 
     def _is_jwt_access_token_valid(self, access_token: str) -> bool:
         """
@@ -71,6 +71,7 @@ class JWTBearer(HTTPBearer):
             if response.status_code == HTTPStatus.OK:
                 logger.info("JWT was valid")
                 return True
+            return False
         except RuntimeError:  # pylint: disable=broad-exception-caught)
             logger.exception("Error decoding JWT access token")
             return False

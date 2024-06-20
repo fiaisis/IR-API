@@ -7,7 +7,8 @@ from __future__ import annotations
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends
-from starlette.background import BackgroundTasks
+from fastapi.security import HTTPAuthorizationCredentials  # noqa: TCH002
+from starlette.background import BackgroundTasks  # noqa: TCH002
 
 from fia_api.core.auth.tokens import JWTBearer, get_user_from_token
 from fia_api.core.responses import (
@@ -94,7 +95,7 @@ OrderField = Literal[
 @ROUTER.get("/instrument/{instrument}/reductions")
 async def get_reductions_for_instrument(
     instrument: str,
-    jwt: Annotated[str, Depends(jwt_security)],
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(jwt_security)],
     limit: int = 0,
     offset: int = 0,
     order_by: OrderField = "reduction_start",
@@ -104,7 +105,7 @@ async def get_reductions_for_instrument(
     """
     Retrieve a list of reductions for a given instrument.
     \f
-    :param jwt: Dependency injected jwt
+    :param credentials: Dependency injected HTTPAuthorizationCredentials
     :param instrument: the name of the instrument
     :param limit: optional limit for the number of reductions returned (default is 0, which can be interpreted as
     no limit)
@@ -114,7 +115,7 @@ async def get_reductions_for_instrument(
     :param include_runs: bool
     :return: List of ReductionResponse objects
     """
-    user = get_user_from_token(jwt)
+    user = get_user_from_token(credentials.credentials)
     instrument = instrument.upper()
     if user.role == "staff":
         reductions = get_reductions_by_instrument(
@@ -154,14 +155,16 @@ async def count_reductions_for_instrument(
 
 
 @ROUTER.get("/reduction/{reduction_id}")
-async def get_reduction(reduction_id: int, jwt: Annotated[str, Depends(jwt_security)]) -> ReductionWithRunsResponse:
+async def get_reduction(
+    reduction_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(jwt_security)]
+) -> ReductionWithRunsResponse:
     """
     Retrieve a reduction with nested run data, by iD.
     \f
     :param reduction_id: the unique identifier of the reduction
     :return: ReductionWithRunsResponse object
     """
-    user = get_user_from_token(jwt)
+    user = get_user_from_token(credentials.credentials)
     if user.role == "staff":
         reduction = get_reduction_by_id(reduction_id)
     else:

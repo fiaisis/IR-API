@@ -4,6 +4,7 @@ Module containing user experiment fetching
 
 import os
 from http import HTTPStatus
+from typing import Any
 
 import requests
 
@@ -21,5 +22,6 @@ def get_experiments_for_user_number(user_number: int) -> list[int]:
         f"{AUTH_URL}/experiments?user_number={user_number}", timeout=30, headers={"Authorization": f"Bearer {API_KEY}"}
     )
     if response.status_code == HTTPStatus.OK:
-        return response.json()
+        experiments: list[Any] = response.json()
+        return experiments
     return []
