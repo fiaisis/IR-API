@@ -4,11 +4,12 @@ Module containing the REST endpoints
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal
 
-from fastapi import APIRouter
-from starlette.background import BackgroundTasks
+from fastapi import APIRouter, Depends
+from starlette.background import BackgroundTasks  # noqa: TCH002
 
+from fia_api.core.auth.tokens import JWTBearer, get_user_from_token
 from fia_api.core.responses import (
     CountResponse,
     PreScriptResponse,
@@ -29,6 +30,7 @@ from fia_api.scripts.acquisition import (
 from fia_api.scripts.pre_script import PreScript
 
 ROUTER = APIRouter()
+jwt_security = JWTBearer()
 
 
 @ROUTER.get("/healthz")
@@ -92,6 +94,7 @@ OrderField = Literal[
 @ROUTER.get("/instrument/{instrument}/reductions")
 async def get_reductions_for_instrument(
     instrument: str,
+    jwt: Annotated[str, Depends(jwt_security)],
     limit: int = 0,
     offset: int = 0,
     order_by: OrderField = "reduction_start",
@@ -101,6 +104,7 @@ async def get_reductions_for_instrument(
     """
     Retrieve a list of reductions for a given instrument.
     \f
+    :param jwt: Dependency injected jwt
     :param instrument: the name of the instrument
     :param limit: optional limit for the number of reductions returned (default is 0, which can be interpreted as
     no limit)
@@ -110,14 +114,26 @@ async def get_reductions_for_instrument(
     :param include_runs: bool
     :return: List of ReductionResponse objects
     """
+    user = get_user_from_token(jwt)
     instrument = instrument.upper()
-    reductions = get_reductions_by_instrument(
-        instrument,
-        limit=limit,
-        offset=offset,
-        order_by=order_by,
-        order_direction=order_direction,
-    )
+    if user.role == "staff":
+        reductions = get_reductions_by_instrument(
+            instrument,
+            limit=limit,
+            offset=offset,
+            order_by=order_by,
+            order_direction=order_direction,
+        )
+    else:
+        reductions = get_reductions_by_instrument(
+            instrument,
+            limit=limit,
+            offset=offset,
+            order_by=order_by,
+            order_direction=order_direction,
+            user_number=user.user_number,
+        )
+
     if include_runs:
         return [ReductionWithRunsResponse.from_reduction(r) for r in reductions]
     return [ReductionResponse.from_reduction(r) for r in reductions]
@@ -138,14 +154,18 @@ async def count_reductions_for_instrument(
 
 
 @ROUTER.get("/reduction/{reduction_id}")
-async def get_reduction(reduction_id: int) -> ReductionWithRunsResponse:
+async def get_reduction(reduction_id: int, jwt: Annotated[str, Depends(jwt_security)]) -> ReductionWithRunsResponse:
     """
     Retrieve a reduction with nested run data, by iD.
     \f
     :param reduction_id: the unique identifier of the reduction
     :return: ReductionWithRunsResponse object
     """
-    reduction = get_reduction_by_id(reduction_id)
+    user = get_user_from_token(jwt)
+    if user.role == "staff":
+        reduction = get_reduction_by_id(reduction_id)
+    else:
+        reduction = get_reduction_by_id(reduction_id, user_number=user.user_number)
     return ReductionWithRunsResponse.from_reduction(reduction)
 
 
