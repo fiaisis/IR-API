@@ -82,6 +82,17 @@ def test_get_reduction_by_id_reduction_exists_for_staff(mock_post):
     }
 
 
+@patch("fia_api.core.auth.tokens.requests.post")
+def test_get_reduction_by_id_reduction_exists_for_user_no_perms(mock_post):
+    """
+    Test Forbidden returned for user lacking permissions
+    :return:
+    """
+    mock_post.return_value.status_code = HTTPStatus.FORBIDDEN
+    response = client.get("/reduction/5001", headers={"Authorization": f"Bearer {USER_TOKEN}"})
+    assert response.status_code == HTTPStatus.NOT_FOUND
+
+
 @patch("fia_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "fia_api/local_scripts")
 def test_get_prescript_when_reduction_does_not_exist():
     """
@@ -179,6 +190,18 @@ def test_get_reductions_for_instrument_reductions_exist_for_staff(mock_post):
             "stacktrace": None,
         }
     ]
+
+
+@patch("fia_api.core.auth.tokens.requests.post")
+def test_get_reductions_for_instrument_reductions_exist_for_user(mock_post):
+    """
+    Test empty array of reductions returned for given instrument when the instrument and reductions exist
+    :return: None
+    """
+    mock_post.return_value.status_code = HTTPStatus.OK
+    response = client.get("/instrument/test/reductions", headers={"Authorization": f"Bearer {USER_TOKEN}"})
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == []
 
 
 @patch("fia_api.core.auth.tokens.requests.post")
