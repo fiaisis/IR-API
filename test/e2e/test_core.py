@@ -193,11 +193,14 @@ def test_get_reductions_for_instrument_reductions_exist_for_staff(mock_post):
 
 
 @patch("fia_api.core.auth.tokens.requests.post")
-def test_get_reductions_for_instrument_reductions_exist_for_user(mock_post):
+@patch("fia_api.core.auth.experiments.requests.get")
+def test_get_reductions_for_instrument_reductions_exist_for_user(mock_get, mock_post):
     """
     Test empty array of reductions returned for given instrument when the instrument and reductions exist
     :return: None
     """
+    mock_get.return_value.status_code = HTTPStatus.OK
+    mock_get.return_value.json.return_value = []
     mock_post.return_value.status_code = HTTPStatus.OK
     response = client.get("/instrument/test/reductions", headers={"Authorization": f"Bearer {USER_TOKEN}"})
     assert response.status_code == HTTPStatus.OK
