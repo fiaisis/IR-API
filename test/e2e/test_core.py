@@ -90,7 +90,7 @@ def test_get_reduction_by_id_reduction_exists_for_user_no_perms(mock_post):
     """
     mock_post.return_value.status_code = HTTPStatus.FORBIDDEN
     response = client.get("/reduction/5001", headers={"Authorization": f"Bearer {USER_TOKEN}"})
-    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.status_code == HTTPStatus.FORBIDDEN
 
 
 @patch("fia_api.scripts.acquisition.LOCAL_SCRIPT_DIR", "fia_api/local_scripts")
