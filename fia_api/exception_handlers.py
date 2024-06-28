@@ -45,3 +45,13 @@ async def unsafe_path_handler(_: Request, __: Exception) -> JSONResponse:
         status_code=400,
         content={"message": "The given request contains bad characters"},
     )
+
+
+async def authentication_error_handler(_: Request, __: Exception) -> JSONResponse:
+    """
+    Automatatically return a 403 when an authentication error is raised
+    :param _:
+    :param __:
+    :return:
+    """
+    return JSONResponse(status_code=403, content={"message": "Forbidden"})

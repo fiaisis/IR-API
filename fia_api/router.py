@@ -4,29 +4,24 @@ Module containing the REST endpoints
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal
 
-from fastapi import APIRouter
-from starlette.background import BackgroundTasks  # Fastapi docs require this
+from fastapi import APIRouter, Depends
+from fastapi.security import HTTPAuthorizationCredentials
+from starlette.background import BackgroundTasks
 
+from fia_api.core.auth.tokens import JWTBearer, get_user_from_token
 from fia_api.core.responses import (
     CountResponse,
     PreScriptResponse,
     ReductionResponse,
     ReductionWithRunsResponse,
-    RunResponse,
 )
 from fia_api.core.services.reduction import (
     count_reductions,
     count_reductions_by_instrument,
     get_reduction_by_id,
-    get_reductions_by_experiment_number,
     get_reductions_by_instrument,
-)
-from fia_api.core.services.run import (
-    get_run_count_by_instrument,
-    get_runs_by_instrument,
-    get_total_run_count,
 )
 from fia_api.scripts.acquisition import (
     get_script_by_sha,
@@ -36,6 +31,7 @@ from fia_api.scripts.acquisition import (
 from fia_api.scripts.pre_script import PreScript
 
 ROUTER = APIRouter()
+jwt_security = JWTBearer()
 
 
 @ROUTER.get("/healthz")
@@ -99,6 +95,7 @@ OrderField = Literal[
 @ROUTER.get("/instrument/{instrument}/reductions")
 async def get_reductions_for_instrument(
     instrument: str,
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(jwt_security)],
     limit: int = 0,
     offset: int = 0,
     order_by: OrderField = "reduction_start",
@@ -108,6 +105,7 @@ async def get_reductions_for_instrument(
     """
     Retrieve a list of reductions for a given instrument.
     \f
+    :param credentials: Dependency injected HTTPAuthorizationCredentials
     :param instrument: the name of the instrument
     :param limit: optional limit for the number of reductions returned (default is 0, which can be interpreted as
     no limit)
@@ -117,14 +115,26 @@ async def get_reductions_for_instrument(
     :param include_runs: bool
     :return: List of ReductionResponse objects
     """
+    user = get_user_from_token(credentials.credentials)
     instrument = instrument.upper()
-    reductions = get_reductions_by_instrument(
-        instrument,
-        limit=limit,
-        offset=offset,
-        order_by=order_by,
-        order_direction=order_direction,
-    )
+    if user.role == "staff":
+        reductions = get_reductions_by_instrument(
+            instrument,
+            limit=limit,
+            offset=offset,
+            order_by=order_by,
+            order_direction=order_direction,
+        )
+    else:
+        reductions = get_reductions_by_instrument(
+            instrument,
+            limit=limit,
+            offset=offset,
+            order_by=order_by,
+            order_direction=order_direction,
+            user_number=user.user_number,
+        )
+
     if include_runs:
         return [ReductionWithRunsResponse.from_reduction(r) for r in reductions]
     return [ReductionResponse.from_reduction(r) for r in reductions]
@@ -145,45 +155,21 @@ async def count_reductions_for_instrument(
 
 
 @ROUTER.get("/reduction/{reduction_id}")
-async def get_reduction(reduction_id: int) -> ReductionWithRunsResponse:
+async def get_reduction(
+    reduction_id: int, credentials: Annotated[HTTPAuthorizationCredentials, Depends(jwt_security)]
+) -> ReductionWithRunsResponse:
     """
     Retrieve a reduction with nested run data, by iD.
     \f
     :param reduction_id: the unique identifier of the reduction
     :return: ReductionWithRunsResponse object
     """
-    reduction = get_reduction_by_id(reduction_id)
+    user = get_user_from_token(credentials.credentials)
+    if user.role == "staff":
+        reduction = get_reduction_by_id(reduction_id)
+    else:
+        reduction = get_reduction_by_id(reduction_id, user_number=user.user_number)
     return ReductionWithRunsResponse.from_reduction(reduction)
-
-
-@ROUTER.get("/experiment/{experiment_number}/reductions")
-async def get_reductions_for_experiment(
-    experiment_number: int,
-    limit: int = 0,
-    offset: int = 0,
-    order_by: Literal["reduction_start", "reduction_end", "reduction_state", "id"] = "reduction_start",
-    order_direction: Literal["desc", "asc"] = "desc",
-) -> list[ReductionResponse]:
-    """
-    Retrieve a list of reductions associated with a specific experiment number.
-    \f
-    :param experiment_number: the unique experiment number:
-    :param limit: Number of results to limit to
-    :param offset: Number of results to offset by
-    :param order_by: Literal["reduction_start", "reduction_end", "reduction_state", "id"]
-    :param order_direction: Literal["asc", "desc"]
-    :return: List of ReductionResponse objects
-    """
-    return [
-        ReductionResponse.from_reduction(r)
-        for r in get_reductions_by_experiment_number(
-            experiment_number,
-            limit=limit,
-            offset=offset,
-            order_by=order_by,
-            order_direction=order_direction,
-        )
-    ]
 
 
 @ROUTER.get("/reductions/count")
@@ -194,63 +180,3 @@ async def count_all_reductions() -> CountResponse:
     :return: CountResponse containing the count
     """
     return CountResponse(count=count_reductions())
-
-
-@ROUTER.get("/runs/count")
-async def count_all_runs() -> CountResponse:
-    """
-    Count all runs
-    \f
-    :return: Count response containing the count
-    """
-    return CountResponse(count=get_total_run_count())
-
-
-@ROUTER.get("/instrument/{instrument}/runs/count")
-async def count_runs_for_instrument(instrument: str) -> CountResponse:
-    """
-    Count the total runs for the given instrument
-    \f
-    :param instrument: The instrument
-    :return: The count response
-    """
-    instrument = instrument.upper()
-    return CountResponse(count=get_run_count_by_instrument(instrument))
-
-
-@ROUTER.get("/instrument/{instrument}/runs")
-async def get_runs_for_instrument(
-    instrument: str,
-    limit: int = 0,
-    offset: int = 0,
-    order_by: Literal[
-        "experiment_number",
-        "run_end",
-        "run_start",
-        "good_frames",
-        "raw_frames",
-        "id",
-        "filename",
-    ] = "run_start",
-    order_direction: Literal["asc", "desc"] = "desc",
-) -> list[RunResponse]:
-    """
-    Get all runs for the given instrument
-    \f
-    :param instrument: The instrument
-    :param limit: Optional limit to apply
-    :param offset: Optional offset to apply
-    :param order_by: Optional field to order by
-    :param order_direction: Optional direction to order by
-    :return: List of RunResponses
-    """
-    return [
-        RunResponse.from_run(run)
-        for run in get_runs_by_instrument(
-            instrument.upper(),
-            limit=limit,
-            offset=offset,
-            order_by=order_by,
-            order_direction=order_direction,
-        )
-    ]

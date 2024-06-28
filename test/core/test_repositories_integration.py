@@ -9,11 +9,9 @@ import datetime
 
 import pytest
 
-from fia_api.core.exceptions import NonUniqueRecordError
 from fia_api.core.model import Base, Instrument, Reduction, ReductionState, Run, Script
 from fia_api.core.repositories import ENGINE, SESSION, Repo
 from fia_api.core.specifications.reduction import ReductionSpecification
-from fia_api.core.specifications.run import RunSpecification
 
 # pylint: disable = redefined-outer-name
 
@@ -125,42 +123,6 @@ def run_repo() -> Repo[Run]:
     :return: RunRepo
     """
     return Repo()
-
-
-def test_base_spec_all(run_repo):
-    """Test all are in result"""
-    result = run_repo.find(RunSpecification().all())
-    assert TEST_RUN_3 in result
-    assert TEST_RUN_2 in result
-    assert TEST_RUN_1 in result
-
-
-def test_base_spec_by_id(run_repo):
-    """Test find by id"""
-    result = run_repo.find_one(RunSpecification().by_id(1))
-    assert result == TEST_RUN_1
-
-
-def test_run_by_instrument(run_repo):
-    """Test finding runs by instrument"""
-    result = run_repo.find(RunSpecification().by_instrument("instrument 1"))
-    assert result == [TEST_RUN_1, TEST_RUN_2]
-    result = run_repo.find(
-        RunSpecification().by_instrument(
-            "instrument 1",
-            limit=1,
-            offset=1,
-            order_by="good_frames",
-            order_direction="desc",
-        )
-    )
-    assert result == [TEST_RUN_2]
-
-
-def test_run_by_instrument_raises_when_non_unique(run_repo):
-    """Test correct exception raised when multiple runs exist"""
-    with pytest.raises(NonUniqueRecordError):
-        run_repo.find_one(RunSpecification().by_instrument("instrument 1"))
 
 
 @pytest.mark.parametrize(

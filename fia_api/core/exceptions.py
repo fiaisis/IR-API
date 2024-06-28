@@ -15,6 +15,12 @@ class MissingRecordError(DatabaseError):
     """
 
 
+class AuthenticationError(Exception):
+    """
+    Raised when there was a problem with authentication or authorisation
+    """
+
+
 class NonUniqueRecordError(DatabaseError):
     """
     Multiple records were found when only a single was expected
