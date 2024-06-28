@@ -14,7 +14,6 @@ from fia_api.core.exceptions import AuthenticationError
 logger = logging.getLogger(__name__)
 
 
-
 @dataclass
 class User:
     user_number: int
