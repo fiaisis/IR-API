@@ -8,7 +8,8 @@ from typing import Any
 
 import requests
 
-AUTH_URL = os.environ.get("AUTH_API_URL", "http://localhost:8001")
+from fia_api.core.auth import AUTH_URL
+
 API_KEY = os.environ.get("AUTH_API_KEY", "shh")
 
 

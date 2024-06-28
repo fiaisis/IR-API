@@ -1,5 +1,4 @@
 import logging
-import os
 from dataclasses import dataclass
 from http import HTTPStatus
 from typing import Literal
@@ -9,11 +8,11 @@ import requests
 from fastapi import HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from fia_api.core.auth import AUTH_URL
 from fia_api.core.exceptions import AuthenticationError
 
 logger = logging.getLogger(__name__)
 
-AUTH_URL = os.environ.get("AUTH_API_URL", "http://127.0.0.1:8001")
 
 
 @dataclass
